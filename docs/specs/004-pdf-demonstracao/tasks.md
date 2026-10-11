@@ -5,7 +5,7 @@
 - [x] Validar compilação, igualdade do PDF e arquivos do commit.
 - [x] Criar commit assinado e publicar sem sobrescrever histórico remoto.
 - [x] Corrigir dependência Linux identificada pelo primeiro workflow remoto.
-- [ ] Confirmar publicação e verificar resultado do workflow.
+- [x] Confirmar publicação e verificar resultado do workflow.
 
 ## Evidências locais
 
@@ -21,3 +21,8 @@
   `origin/master`; assinatura GPG confirmada pelo GitHub como `valid`.
 - Workflow inicial `38164444002` identificou ausência de `abntex2.cls`;
   `texlive-publishers` acrescentado ao CI e ao README, com checagem da classe.
+- Correção publicada no commit assinado `74cd805b15b72bbbe9a25d055771f607fb27144d`.
+- [Workflow corrigido](https://github.com/CA-SI/documento-modelo-abntex-srs/actions/runs/38165006800)
+  concluído com `success`, incluindo compilação, verificação e publicação do artefato PDF.
+- [PDF de demonstração](https://github.com/CA-SI/documento-modelo-abntex-srs/blob/master/exemplos/srs-demonstracao.pdf)
+  publicado no repositório e acessível pelo README.
