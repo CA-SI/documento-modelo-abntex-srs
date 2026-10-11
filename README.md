@@ -28,7 +28,7 @@ Instale uma distribuição TeX com `latexmk`, pdfLaTeX, BibTeX, abnTeX2 e fontes
 Latin Modern, além de Python 3 para a verificação. No Debian/Ubuntu:
 
 ```sh
-sudo apt-get install latexmk texlive-lang-portuguese texlive-latex-extra texlive-fonts-recommended lmodern python3
+sudo apt-get install latexmk texlive-lang-portuguese texlive-latex-extra texlive-publishers texlive-fonts-recommended lmodern python3
 make          # gera build/srs.pdf
 make check    # compila e verifica IDs, rastreabilidade, marcadores e log
 make demo     # verifica e atualiza exemplos/srs-demonstracao.pdf
