@@ -1,0 +1,109 @@
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{indentfirst}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{needspace}
+\usepackage{keyval}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit}
+\usepackage[alf]{abntex2cite}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\definecolor{srscabecalho}{RGB}{230,234,237}
+\definecolor{srslinha}{RGB}{155,164,170}
+\arrayrulecolor{srslinha}
+\setlength{\emergencystretch}{2em}
+\setlength{\LTpre}{0.6\baselineskip}
+\setlength{\LTpost}{0.8\baselineskip}
+\hypersetup{hidelinks,bookmarksdepth=3}
+
+% Tabelas compactas: primeira linha explícita, colunas dimensionadas pelo autor.
+\newenvironment{tabelasrs}[1]{%
+  \begingroup\small\renewcommand{\arraystretch}{1.25}%
+  \setlength{\tabcolsep}{6pt}\tabularx{\textwidth}{#1}\toprule
+}{\bottomrule\endtabularx\endgroup}
+\newcommand{\cabecalhosrs}{\rowcolor{srscabecalho}}
+
+% Fichas extensas: quebram entre campos e repetem título e cabeçalho.
+\newenvironment{fichasrs}[1]{%
+  \begingroup\small\renewcommand{\arraystretch}{1.22}%
+  \setlength{\tabcolsep}{7pt}%
+  \begin{longtable}{L{\dimexpr0.24\textwidth-2\tabcolsep\relax}L{\dimexpr0.76\textwidth-2\tabcolsep\relax}}
+  \caption{#1}\\
+  \toprule\cabecalhosrs\textbf{Campo} & \textbf{Especificação}\\\midrule
+  \endfirsthead
+  \multicolumn{2}{l}{\textit{#1 (continuação)}}\\
+  \toprule\cabecalhosrs\textbf{Campo} & \textbf{Especificação}\\\midrule
+  \endhead
+  \midrule\multicolumn{2}{r}{\textit{Continua na próxima página.}}\\
+  \endfoot
+  \bottomrule\endlastfoot
+}{\end{longtable}\endgroup}
+\newcommand{\campoficha}[2]{\textbf{#1} & #2\\\hline}
+\newcommand{\aceite}[3]{%
+  \textbf{Dado} #1.\par\textbf{Quando} #2.\par\textbf{Então} #3.}
+
+% Os seis argumentos obrigatórios são compatíveis com a primeira versão.
+\makeatletter
+% Quadros compactos ficam no fluxo e não atravessam seções.
+\newenvironment{quadrosrs}{%
+  \par\addvspace{\intextsep}\noindent
+  \begin{minipage}{\textwidth}\def\@captype{table}%
+}{\end{minipage}\par\addvspace{\intextsep}}
+\newenvironment{figurasrs}{%
+  \par\addvspace{\intextsep}\noindent
+  \begin{minipage}{\textwidth}\def\@captype{figure}%
+}{\end{minipage}\par\addvspace{\intextsep}}
+\define@key{srsreq}{categoria}{\def\srs@categoria{#1}}
+\define@key{srsreq}{precondicoes}{\def\srs@precondicoes{#1}}
+\define@key{srsreq}{gatilho}{\def\srs@gatilho{#1}}
+\define@key{srsreq}{entradas}{\def\srs@entradas{#1}}
+\define@key{srsreq}{saidas}{\def\srs@saidas{#1}}
+\define@key{srsreq}{excecoes}{\def\srs@excecoes{#1}}
+\define@key{srsreq}{relacoes}{\def\srs@relacoes{#1}}
+\define@key{srsreq}{metrica}{\def\srs@metrica{#1}}
+\define@key{srsreq}{meta}{\def\srs@meta{#1}}
+\define@key{srsreq}{verificacao}{\def\srs@verificacao{#1}}
+\newcommand{\srs@limpar}{%
+  \let\srs@categoria\@empty\let\srs@precondicoes\@empty
+  \let\srs@gatilho\@empty\let\srs@entradas\@empty
+  \let\srs@saidas\@empty\let\srs@excecoes\@empty
+  \let\srs@relacoes\@empty\let\srs@metrica\@empty
+  \let\srs@meta\@empty\let\srs@verificacao\@empty}
+\newcommand{\srs@opcional}[2]{%
+  \ifx#2\@empty\let\srs@proximo\@gobbletwo
+  \else\let\srs@proximo\campoficha\fi
+  \srs@proximo{#1}{#2}}
+\newcommand{\requisito}[7][]{%
+  \begingroup\srs@limpar\setkeys{srsreq}{#1}%
+  \Needspace{0.55\textheight}%
+  \subsection{#2 -- #3}\label{req:#2}
+  \begin{fichasrs}{Especificação de #2}
+    \campoficha{Identificador}{\texttt{#2}}
+    \srs@opcional{Categoria}{\srs@categoria}
+    \campoficha{Prioridade}{#4}
+    \campoficha{Origem}{#5}
+    \campoficha{Enunciado}{#6}
+    \srs@opcional{Precondições}{\srs@precondicoes}
+    \srs@opcional{Gatilho}{\srs@gatilho}
+    \srs@opcional{Entradas}{\srs@entradas}
+    \srs@opcional{Saídas}{\srs@saidas}
+    \srs@opcional{Exceções}{\srs@excecoes}
+    \srs@opcional{Métrica}{\srs@metrica}
+    \srs@opcional{Meta}{\srs@meta}
+    \campoficha{Aceite}{#7}
+    \srs@opcional{Verificação}{\srs@verificacao}
+    \srs@opcional{Relações}{\srs@relacoes}
+  \end{fichasrs}\endgroup}
+\makeatother
+\newcommand{\reqref}[1]{\hyperref[req:#1]{\texttt{#1}}}
+\newcommand{\ucref}[1]{\hyperref[uc:#1]{\texttt{#1}}}
+\newcommand{\ctref}[1]{\hyperref[ct:#1]{\texttt{#1}}}
+\newcommand{\rnref}[1]{\hyperref[rn:#1]{\texttt{#1}}}

@@ -1,0 +1,41 @@
+\begin{tikzpicture}
+  \node[circle,fill=black,inner sep=2pt] (inicio) at (0,0) {};
+  \node[uml/acao] (validar) at (0,-1.2) {Validar corpo e sessão};
+  \node[uml/decisao] (sessao) at (0,-2.7) {Válidos?};
+  \node[uml/acao,text width=30mm] (erroentrada) at (-5,-2.7) {Recusar:\\400, 401 ou 422};
+  \node[uml/acao] (buscar) at (0,-4.2) {Buscar inscrição ativa\\do titular/evento};
+  \node[uml/decisao] (existente) at (0,-5.7) {Existe?};
+  \node[uml/acao,text width=30mm] (repetir) at (5,-5.7) {Retornar 200\\com o mesmo ID};
+  \node[uml/decisao] (elegivel) at (0,-7.4) {Elegível?};
+  \node[uml/acao,text width=30mm] (recusar) at (-5,-7.4) {Recusar:\\404 ou 409};
+  \node[uml/acao] (gravar) at (0,-9.0) {Persistir criação e\\efeito na capacidade};
+  \node[uml/decisao] (confirmada) at (0,-10.6) {Confirmada?};
+  \node[uml/acao,text width=30mm] (indisponivel) at (-5,-10.6) {Informar 503\\sem sucesso};
+  \node[uml/acao] (sucesso) at (0,-12.2) {Retornar 201\\com novo ID};
+  \finaluml{fim}{(0,-13.6)}
+  \finaluml{fimEntrada}{(-5,-4.0)}
+  \finaluml{fimRecusa}{(-5,-8.7)}
+  \finaluml{fimFalha}{(-5,-12.0)}
+  \finaluml{fimRepeticao}{(5,-7.0)}
+  \draw[uml/fluxo] (inicio) -- (validar);
+  \draw[uml/fluxo] (validar) -- (sessao);
+  \draw[uml/fluxo] (sessao) -- node[uml/rotulo,above]{[não]} (erroentrada);
+  \draw[uml/fluxo] (sessao) -- node[uml/rotulo,right]{[sim]} (buscar);
+  \draw[uml/fluxo] (buscar) -- (existente);
+  \draw[uml/fluxo] (existente) -- node[uml/rotulo,above]{[sim]} (repetir);
+  \draw[uml/fluxo] (existente) -- node[uml/rotulo,right]{[não]} (elegivel);
+  \draw[uml/fluxo] (elegivel) -- node[uml/rotulo,above]{[não]} (recusar);
+  \draw[uml/fluxo] (elegivel) -- node[uml/rotulo,right]{[sim]} (gravar);
+  \draw[uml/fluxo] (gravar) -- (confirmada);
+  \draw[uml/fluxo] (confirmada) -- node[uml/rotulo,above]{[não]} (indisponivel);
+  \draw[uml/fluxo] (confirmada) -- node[uml/rotulo,right]{[sim]} (sucesso);
+  \draw[uml/fluxo] (sucesso) -- (fim);
+  \draw[uml/fluxo] (erroentrada) -- (fimEntrada);
+  \draw[uml/fluxo] (recusar) -- (fimRecusa);
+  \draw[uml/fluxo] (indisponivel) -- (fimFalha);
+  \draw[uml/fluxo] (repetir) -- (fimRepeticao);
+  \node[uml/nota,text width=39mm] at (4.9,-2.6)
+    {Trecho de domínio: leitura consistente, validação de vaga e gravação na mesma operação atômica.};
+  \node[uml/nota,text width=39mm] at (4.9,-9.1)
+    {Elegibilidade: evento conhecido, publicado, no prazo e com vaga. Duplicidade é decidida antes do prazo.};
+\end{tikzpicture}

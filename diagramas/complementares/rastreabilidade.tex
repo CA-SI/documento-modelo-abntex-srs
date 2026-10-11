@@ -1,0 +1,12 @@
+\begin{tikzpicture}
+  \node[uml/caixa,text width=30mm] (obj) at (0,0) {OBJ-002\\Inscrição válida};
+  \node[uml/caixa,text width=30mm] (rf) at (5.1,0) {\reqref{RF-002}\\Confirmar inscrição};
+  \node[uml/caixa,text width=30mm] (uc) at (10.2,0) {\ucref{UC-001}\\Realizar inscrição};
+  \node[uml/caixa,text width=30mm] (rn) at (5.1,-3.2) {\rnref{RN-001}\\Capacidade e unicidade};
+  \node[uml/caixa,text width=30mm] (ct) at (10.2,-3.2) {\ctref{CT-002}\\Última vaga};
+  \draw[uml/fluxo] (obj) -- node[uml/rotulo,above]{motiva} (rf);
+  \draw[uml/fluxo] (rf) -- node[uml/rotulo,above,text width=17mm]{detalhado\\em} (uc);
+  \draw[uml/fluxo] (rn) -- node[uml/rotulo,left]{restringe} (rf);
+  \draw[uml/fluxo] (ct) -- node[uml/rotulo,above]{verifica} (rn);
+  \draw[uml/fluxo] (ct.north west) -- node[uml/rotulo,above,sloped]{verifica} (rf.south east);
+\end{tikzpicture}

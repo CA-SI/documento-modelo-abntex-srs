@@ -1,0 +1,109 @@
+\chapter{Requisitos funcionais}\label{cap:funcionais}
+
+\section{Catálogo de funcionalidades}
+As fichas detalham uma capacidade por requisito. As relações indicam os casos
+de uso, as regras e os atributos de qualidade que devem ser verificados junto
+com o comportamento funcional.
+
+\begin{quadrosrs}
+\caption{Requisitos funcionais e objetivos}
+\begin{tabelasrs}{L{0.16\textwidth}YL{0.15\textwidth}L{0.16\textwidth}}
+\cabecalhosrs\textbf{ID} & \textbf{Capacidade} & \textbf{Objetivo} & \textbf{Prioridade}\\\midrule
+\reqref{RF-001} & Consultar eventos. & OBJ-001 & Alta\\
+\reqref{RF-002} & Confirmar inscrição. & OBJ-002 & Alta\\
+\reqref{RF-003} & Tratar inscrição duplicada. & OBJ-002 & Alta\\
+\reqref{RF-004} & Cancelar inscrição. & OBJ-003 & Alta\\
+\reqref{RF-005} & Consultar próprias inscrições. & OBJ-002/003 & Alta\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}
+
+\Needspace{0.75\textheight}
+\section{Fichas de especificação}
+\requisito[
+  categoria={Consulta},
+  precondicoes={Existe uma base local de eventos recebidos do catálogo externo. Sessão não é exigida.},
+  gatilho={Visitante solicita a lista de eventos.},
+  entradas={Instante de referência do servidor; eventos publicados e suas inscrições ativas.},
+  saidas={Lista com \texttt{id}, \texttt{nome}, \texttt{inicio} e \texttt{vagas}; lista vazia se não há eventos elegíveis.},
+  excecoes={Falha de leitura: informar indisponibilidade, sem apresentar lista parcial como resultado completo.},
+  relacoes={\ucref{UC-003}; \reqref{RNF-001}; \ctref{CT-001}.}
+]{RF-001}{Consultar eventos}{Alta}{OBJ-001; necessidade de STK-001}
+{O sistema deve listar somente eventos publicados e futuros, em ordem crescente
+ de início, apresentando nome, data e vagas disponíveis. Empates são ordenados
+ pelo identificador do evento.}
+{\aceite{uma base com eventos publicados e não publicados, passados e futuros}
+{um visitante solicita o catálogo}
+{somente os publicados futuros são retornados, com os campos e a ordem definidos;
+ sem eventos elegíveis, a lista é vazia e a interface informa a ausência de resultados}}
+
+\requisito[
+  categoria={Criação},
+  precondicoes={Sessão válida; evento conhecido, publicado, no prazo, com vaga e sem inscrição ativa do titular.},
+  gatilho={Participante confirma sua inscrição no evento selecionado.},
+  entradas={\texttt{eventoId}; identidade obtida da sessão, sem aceitar titular indicado pelo cliente.},
+  saidas={Nova inscrição ativa persistida e seu identificador; uma vaga consumida.},
+  excecoes={Sem vaga, prazo encerrado ou evento não publicado: negar sem gravar. Falha na persistência: não confirmar sucesso.},
+  relacoes={\ucref{UC-001}; \rnref{RN-001}; \rnref{RN-002}; \reqref{RNF-002}; \reqref{RNF-004}; \ctref{CT-002}.}
+]{RF-002}{Confirmar inscrição}{Alta}{OBJ-002; necessidade de STK-002 e STK-003}
+{O sistema deve criar uma inscrição ativa para o participante autenticado quando
+ as precondições são satisfeitas, retornando o identificador somente após a
+ persistência. A validação de vaga e a criação são uma única operação atômica.}
+{\aceite{um evento com uma vaga e duas pessoas distintas autenticadas}
+{as duas solicitam inscrição simultaneamente antes do início}
+{exatamente uma inscrição é confirmada e persistida; a outra solicitação informa
+ falta de vaga, sem exceder a capacidade}}
+
+\requisito[
+  categoria={Repetição de operação},
+  precondicoes={Sessão válida e inscrição ativa da mesma pessoa no evento conhecido.},
+  gatilho={Participante repete uma solicitação de inscrição.},
+  entradas={O mesmo \texttt{eventoId} e a identidade da sessão.},
+  saidas={Identificador da inscrição ativa existente e informação de que não houve nova criação.},
+  excecoes={Sessão inválida impede o acesso ao identificador existente. Evento desconhecido não produz confirmação.},
+  relacoes={\ucref{UC-001}, alternativa A1; \rnref{RN-001}; \reqref{RNF-002}; \ctref{CT-003}.}
+]{RF-003}{Tratar inscrição duplicada}{Alta}{OBJ-002; regra de unicidade}
+{Se já existe inscrição ativa do participante no evento, o sistema deve retornar
+ o identificador existente e informar a duplicidade, sem criar outro registro
+ ativo nem consumir outra vaga. A consulta da duplicidade antecede a avaliação
+ de vaga e prazo para uma nova criação.}
+{\aceite{uma pessoa que solicita duas vezes a inscrição no mesmo evento}
+{as solicitações são consecutivas ou simultâneas}
+{há somente uma inscrição ativa e uma vaga consumida; a repetição retorna
+ o mesmo identificador, inclusive se o prazo de novas inscrições se encerrou}}
+
+\requisito[
+  categoria={Alteração de estado},
+  precondicoes={Sessão válida; inscrição conhecida e pertencente ao solicitante; instante anterior ao início.},
+  gatilho={Titular confirma o cancelamento.},
+  entradas={Identificador da inscrição e identidade da sessão.},
+  saidas={Inscrição cancelada; instante do primeiro cancelamento; uma vaga liberada.},
+  excecoes={No início ou depois: negar. Registro inexistente ou de outra pessoa: resposta indistinguível de recurso ausente. Falha de gravação conserva o estado anterior.},
+  relacoes={\ucref{UC-002}; \rnref{RN-001}; \rnref{RN-002}; \reqref{RNF-002}; \reqref{RNF-004}; \ctref{CT-004}.}
+]{RF-004}{Cancelar inscrição}{Alta}{OBJ-003; necessidade de STK-002}
+{O sistema deve cancelar a inscrição ativa do titular antes do início do evento,
+ liberando uma única vaga. Repetir o cancelamento no prazo conserva a situação,
+ o instante do primeiro cancelamento e o total de vagas.}
+{\aceite{uma inscrição ativa do titular em evento que ainda não começou}
+{o titular cancela e repete o cancelamento}
+{a inscrição permanece cancelada, o instante original é preservado e apenas uma
+ vaga foi liberada; solicitações no início ou depois são negadas}}
+
+\requisito[
+  categoria={Consulta pessoal},
+  precondicoes={Sessão válida.},
+  gatilho={Participante acessa suas inscrições.},
+  entradas={Identidade obtida da sessão; inscrições ativas e canceladas.},
+  saidas={Lista com identificador, evento, situação, criação e cancelamento quando existente.},
+  excecoes={Sessão expirada: solicitar autenticação; falha de leitura: informar indisponibilidade. Sem registros: lista vazia.},
+  relacoes={\ucref{UC-004}; \reqref{RNF-002}; \ctref{CT-008}.}
+]{RF-005}{Consultar próprias inscrições}{Alta}{OBJ-002 e OBJ-003; necessidade de STK-002}
+{O sistema deve listar somente as inscrições do participante autenticado,
+ incluindo ativas e canceladas, em ordem decrescente de criação. Empates são
+ ordenados pelo identificador. A interface oferece cancelamento somente para
+ registros ativos de eventos que ainda não começaram. A consulta por
+ identificador também deve restringir o retorno ao titular.}
+{\aceite{inscrições ativas e canceladas de duas pessoas}
+{uma delas consulta suas inscrições com sessão válida}
+{somente seus registros são retornados, com campos e ordem definidos;
+ o controle de cancelamento aparece apenas nos registros elegíveis}}

@@ -1,0 +1,17 @@
+\begin{tikzpicture}
+  \node[uml/caixa,rectangle split,rectangle split parts=2,
+    rectangle split part align={center,left},text width=42mm] (eventos) at (0,0)
+    {\textbf{EVENTO}
+    \nodepart{second}PK id\\nome\\inicio\\capacidade\\publicado};
+  \node[uml/caixa,rectangle split,rectangle split parts=2,
+    rectangle split part align={center,left},text width=46mm] (inscricoes) at (10.0,0)
+    {\textbf{INSCRICAO}
+    \nodepart{second}PK id\\FK eventoId\\participanteId (externo)\\situacao\\criadaEm\\canceladaEm (opcional)};
+  \node[uml/decisao,text width=17mm] (relacao) at (5.0,0) {recebe};
+  \draw (eventos.east) -- node[uml/rotulo,above]{1} (relacao.west);
+  \draw (relacao.east) -- node[uml/rotulo,above]{0..N} (inscricoes.west);
+  \node[uml/nota,text width=112mm] at (5.0,-4.2)
+    {Cada inscrição referencia um evento. O titular pertence ao serviço de identidade:
+     \texttt{participanteId} não exige uma tabela local de credenciais.
+     \texttt{vagas} é derivado, não um novo dado independente.};
+\end{tikzpicture}

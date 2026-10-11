@@ -1,0 +1,31 @@
+\begin{tikzpicture}[font=\footnotesize]
+  \atoruml{pessoa}{(0,0)}{Participante}
+  \node[uml/caixa,font=\footnotesize,text width=23mm] (ui) at (3.5,0) {:Interface};
+  \node[uml/caixa,font=\footnotesize,text width=27mm] (sistema) at (7.1,0) {:Sistema};
+  \node[uml/caixa,font=\footnotesize,text width=31mm] (dados) at (11.2,0) {:Armazenamento};
+  \foreach \x in {0,3.5,7.1,11.2}
+    \draw[dashed,draw=srslinha] (\x,-1.15) -- (\x,-15.9);
+  \draw[uml/chamada] (0,-1.6) -- node[uml/rotulo,above]{confirmar evento} (3.5,-1.6);
+  \draw[uml/chamada] (3.5,-2.6) -- node[uml/rotulo,above]{POST /inscricoes} (7.1,-2.6);
+  \draw[uml/chamada] (7.1,-3.2) -- (8.1,-3.2) -- (8.1,-4.2)
+    -- node[uml/rotulo,right,text width=30mm]{validar corpo\\e sessão} (7.1,-4.2);
+  \draw[draw=srslinha] (6.4,-4.8) rectangle (13.1,-7.5);
+  \node[uml/rotulo,anchor=north west,fill=white] at (6.4,-4.8) {critical};
+  \draw[uml/chamada] (7.1,-5.8) -- node[uml/rotulo,above,text width=35mm]
+    {obter existente ou\\criar se elegível} (11.2,-5.8);
+  \draw[uml/retorno] (11.2,-6.8) -- node[uml/rotulo,above]{resultado da operação} (7.1,-6.8);
+  \draw[draw=srslinha] (2.0,-8.0) rectangle (13.1,-14.7);
+  \node[uml/rotulo,anchor=north west,fill=white] at (2.0,-8.0) {alt};
+  \node[uml/rotulo,anchor=north west] at (3.0,-8.0) {[inscrição ativa existente]};
+  \draw[uml/retorno] (7.1,-9.0) -- node[uml/rotulo,above]{200 + mesmo ID} (3.5,-9.0);
+  \draw[dashed,draw=srslinha] (2.0,-9.6) -- (13.1,-9.6);
+  \node[uml/rotulo,anchor=north west] at (3.0,-9.6) {[nova inscrição confirmada]};
+  \draw[uml/retorno] (7.1,-10.6) -- node[uml/rotulo,above]{201 + novo ID} (3.5,-10.6);
+  \draw[dashed,draw=srslinha] (2.0,-11.2) -- (13.1,-11.2);
+  \node[uml/rotulo,anchor=north west] at (3.0,-11.2) {[operação recusada]};
+  \draw[uml/retorno] (7.1,-12.2) -- node[uml/rotulo,above]{404 ou 409; sem gravação} (3.5,-12.2);
+  \draw[dashed,draw=srslinha] (2.0,-12.8) -- (13.1,-12.8);
+  \node[uml/rotulo,anchor=north west] at (3.0,-12.8) {[falha de leitura ou gravação]};
+  \draw[uml/retorno] (7.1,-13.8) -- node[uml/rotulo,above]{503; sem confirmação} (3.5,-13.8);
+  \draw[uml/retorno] (3.5,-15.5) -- node[uml/rotulo,above]{apresentar resultado} (0,-15.5);
+\end{tikzpicture}

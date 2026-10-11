@@ -1,0 +1,27 @@
+\begin{tikzpicture}
+  \node[uml/classe,rectangle split parts=2] (pessoa) at (0,0)
+    {\textbf{Participante}
+    \nodepart{second}+ id: Identificador};
+  \node[uml/classe] (evento) at (8.6,0)
+    {\textbf{Evento}
+    \nodepart{second}+ id: Identificador\\+ nome: Texto\\+ inicio: InstanteUTC\\
+      + capacidade: Inteiro\\+ publicado: Booleano\\+ /vagas: Inteiro
+    \nodepart{third}+ elegivel(agora): Booleano};
+  \node[uml/classe,text width=57mm] (inscricao) at (3.6,-6.0)
+    {\textbf{Inscrição}
+    \nodepart{second}+ id: Identificador\\+ eventoId: Identificador\\
+      + participanteId: Identificador\\+ situacao: SituacaoInscricao\\
+      + criadaEm: InstanteUTC\\+ canceladaEm:\\\hspace*{1em}InstanteUTC [0..1]
+    \nodepart{third}+ cancelar(agora)\\+ pertenceA(titular): Booleano};
+  \node[uml/caixa,rectangle split,rectangle split parts=2,
+    rectangle split part align={center,left},text width=37mm] (situacao) at (9.1,-6.0)
+    {\guillemotleft enumeration\guillemotright\\\textbf{SituacaoInscricao}
+    \nodepart{second}ativa\\cancelada};
+  \draw (pessoa.south) -- node[uml/rotulo,pos=0.10,left]{1}
+    node[uml/rotulo,pos=0.88,left]{0..*}
+    node[uml/rotulo,midway,left=3mm]{titular} (inscricao.north west);
+  \draw (evento.south) -- node[uml/rotulo,pos=0.10,right]{1}
+    node[uml/rotulo,pos=0.90,right]{0..*}
+    node[uml/rotulo,midway,right=3mm]{evento} (inscricao.north east);
+  \draw[uml/dependencia] (inscricao.east) -- (situacao.west);
+\end{tikzpicture}

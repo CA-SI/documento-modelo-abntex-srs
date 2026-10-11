@@ -1,0 +1,88 @@
+\chapter{Verificação e rastreabilidade}\label{cap:verificacao}
+
+\section{Matriz de rastreabilidade}
+Cada requisito se liga a um objetivo e a pelo menos um cenário observável.
+A matriz permite conferir cobertura e identificar o impacto de alterações em
+regras ou fluxos. Os cenários são procedimentos de verificação do produto
+fictício; não representam resultados de testes já executados.
+
+\begin{quadrosrs}
+\caption{Objetivos, requisitos, casos de uso e testes}\label{tab:rastreabilidade}
+\begin{tabelasrs}{L{0.15\textwidth}L{0.16\textwidth}YL{0.15\textwidth}}
+\cabecalhosrs\textbf{Objetivo} & \textbf{Requisito} & \textbf{Caso de uso e regra} & \textbf{Teste}\\\midrule
+OBJ-001 & \reqref{RF-001} & \ucref{UC-003} & \ctref{CT-001}\\
+OBJ-002 & \reqref{RF-002} & \ucref{UC-001}; \rnref{RN-001}, \rnref{RN-002} & \ctref{CT-002}\\
+OBJ-002 & \reqref{RF-003} & \ucref{UC-001}; \rnref{RN-001} & \ctref{CT-003}\\
+OBJ-003 & \reqref{RF-004} & \ucref{UC-002}; \rnref{RN-001}, \rnref{RN-002} & \ctref{CT-004}\\
+OBJ-002/003 & \reqref{RF-005} & \ucref{UC-004} & \ctref{CT-008}\\
+OBJ-001 & \reqref{RNF-001} & \ucref{UC-003} & \ctref{CT-005}\\
+OBJ-002/003 & \reqref{RNF-002} & \ucref{UC-001}, \ucref{UC-002}, \ucref{UC-004} & \ctref{CT-006}\\
+OBJ-002/003 & \reqref{RNF-003} & \ucref{UC-001}, \ucref{UC-002} & \ctref{CT-007}\\
+OBJ-002/003 & \reqref{RNF-004} & \ucref{UC-001}, \ucref{UC-002}, \ucref{UC-004} & \ctref{CT-009}\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}
+
+\Needspace{0.75\textheight}
+\section{Catálogo de cenários}
+Prepare os dados de cada cenário em ambiente isolado. Controle o relógio para
+verificar instantes de fronteira e observe o estado persistido, além das
+mensagens da interface. Nenhum cenário negativo pode consumir uma vaga ou
+alterar um registro autorizado de outra pessoa.
+
+\begingroup\small\renewcommand{\arraystretch}{1.22}\setlength{\tabcolsep}{6pt}
+\begin{longtable}{L{\dimexpr0.14\textwidth-2\tabcolsep\relax}L{\dimexpr0.42\textwidth-2\tabcolsep\relax}L{\dimexpr0.44\textwidth-2\tabcolsep\relax}}
+\caption{Condições e resultados esperados dos testes}\\
+\toprule\cabecalhosrs\textbf{ID} & \textbf{Condição e ação} & \textbf{Resultado esperado}\\\midrule
+\endfirsthead
+\multicolumn{3}{l}{\textit{Cenários de teste (continuação)}}\\
+\toprule\cabecalhosrs\textbf{ID} & \textbf{Condição e ação} & \textbf{Resultado esperado}\\\midrule
+\endhead
+\midrule\multicolumn{3}{r}{\textit{Continua na próxima página.}}\\\endfoot
+\bottomrule\endlastfoot
+\phantomsection\label{ct:CT-001}CT-001 & Consultar base com eventos publicados e não publicados, passados, futuros e com empate de início. Repetir sem elegíveis. & Campos completos, filtro correto, ordem por início e ID; lista vazia quando necessário.\\\hline
+\phantomsection\label{ct:CT-002}CT-002 & Disputar a última vaga com duas pessoas; tentar criar em evento não publicado, no início e após ele; enviar corpo inválido. & Uma confirmação e uma recusa na disputa; nenhuma criação nas condições inválidas.\\\hline
+\phantomsection\label{ct:CT-003}CT-003 & Repetir a criação da mesma pessoa, consecutiva e simultaneamente. Repetir depois do início quando já existe inscrição ativa. & Uma inscrição ativa, uma vaga consumida e mesmo ID na repetição.\\\hline
+\phantomsection\label{ct:CT-004}CT-004 & Cancelar no prazo e repetir. Reinscrever antes do início e tentar cancelar no início e depois. & Uma vaga liberada, instante preservado, novo ID na reinscrição e recusa fora do prazo.\\\hline
+\phantomsection\label{ct:CT-005}CT-005 & Executar carga, aquecimento e janela de medição de \reqref{RNF-001}. & p95 de até 2 segundos e zero erros 5xx.\\\hline
+\phantomsection\label{ct:CT-006}CT-006 & Chamar operações pessoais sem sessão, com sessão expirada e com sessão de outra pessoa; tentar fornecer titular no corpo. & 401 quando não autenticado; 404 para recurso ausente/alheio; titular nunca escolhido pelo cliente; catálogo público disponível.\\\hline
+\phantomsection\label{ct:CT-007}CT-007 & Executar inscrição e cancelamento somente por teclado. & Todos os controles alcançáveis; foco visível; resultados perceptíveis; nenhuma etapa exige mouse.\\\hline
+\phantomsection\label{ct:CT-008}CT-008 & Consultar registros ativos e cancelados de duas pessoas, incluindo empate de criação e lista sem registros. & Apenas registros do titular; campos e ordenação corretos; cancelamento oferecido só quando elegível.\\\hline
+\phantomsection\label{ct:CT-009}CT-009 & Confirmar inscrição e cancelamento; reiniciar a aplicação sem modificar o armazenamento; consultar novamente. & Mesmos IDs, situações, titulares e vagas; nenhuma operação confirmada perdida.\\
+\end{longtable}
+\endgroup
+
+\Needspace{0.75\textheight}
+\section{Caso de teste detalhado: última vaga}
+O teste de concorrência observa o contrato e os efeitos persistidos. As duas
+solicitações devem partir de uma barreira comum, sem outras operações que
+modifiquem o evento durante a execução.
+
+\begin{fichasrs}{Procedimento de CT-002 para a última vaga}
+\campoficha{Requisitos}{\reqref{RF-002}; \rnref{RN-001}.}
+\campoficha{Tipo e objetivo}{Integração/API: verificar que duas operações concorrentes não excedem a capacidade.}
+\campoficha{Dados}{Evento \texttt{evt-001}, publicado, capacidade 1 e nenhuma inscrição ativa; início em \texttt{2026-10-20T15:00:00Z}. Pessoas \texttt{pessoa-a} e \texttt{pessoa-b}, com sessões válidas.}
+\campoficha{Precondições}{Relógio de teste fixado em \texttt{2026-10-20T14:00:00Z}; ambiente isolado; nenhuma outra operação sobre o evento.}
+\campoficha{Passos}{1. Conferir uma vaga no catálogo. 2. Enviar duas criações simultâneas para \texttt{evt-001}, uma por pessoa. 3. Guardar códigos e IDs retornados. 4. Consultar inscrições das duas pessoas e as vagas do evento.}
+\campoficha{Resultado esperado}{Uma resposta 201 e uma 409 com \texttt{SEM\_VAGAS}; exatamente uma inscrição ativa persistida; zero vagas; ID confirmado presente na consulta do titular.}
+\campoficha{Evidência}{Respostas das duas operações, instante controlado, registros consultados e total de vagas. Remover os valores das sessões do material registrado.}
+\end{fichasrs}
+
+\Needspace{0.75\textheight}
+\section{Caso de teste detalhado: prazo e repetição}
+\begin{fichasrs}{Procedimento de CT-004 para cancelamento}
+\campoficha{Requisitos}{\reqref{RF-004}; \rnref{RN-001}, \rnref{RN-002}.}
+\campoficha{Tipo e objetivo}{Integração/API: verificar liberação de vaga, repetição e limite exato de prazo.}
+\campoficha{Dados}{Evento publicado \texttt{evt-001}, capacidade 1, início em \texttt{2026-10-20T15:00:00Z}; inscrição ativa \texttt{ins-001} do titular; zero vagas.}
+\campoficha{Passos}{1. Cancelar às 14:30 UTC. 2. Consultar o registro e as vagas. 3. Repetir às 14:31 UTC. 4. Inscrever novamente às 14:40 UTC. 5. Tentar cancelar a nova inscrição às 15:00 UTC e depois desse instante.}
+\campoficha{Resultado esperado}{Passos 1 e 3 retornam 204; primeiro registro cancelado às 14:30 e uma única vaga liberada. Passo 4 cria novo ID e consome a vaga. Passo 5 retorna 409; nova inscrição permanece ativa.}
+\campoficha{Evidência}{Respostas, relógio em cada passo, IDs distintos, instante do primeiro cancelamento preservado e contagem de vagas.}
+\end{fichasrs}
+
+\section{Critérios de revisão da especificação}
+Uma revisão verifica se cada obrigação tem origem, ID e resultado observável;
+se precondições e exceções correspondem às regras; se entradas e saídas usam
+os mesmos campos do dicionário; e se todo requisito aparece na matriz. Critérios
+quantitativos incluem ambiente, unidade, janela e limite. Resultados de testes
+ e decisões de alteração são registrados no acompanhamento do produto, ligados
+ aos IDs estáveis da especificação.

@@ -1,0 +1,15 @@
+\begin{tikzpicture}
+  \nouml{cliente}{(0,0)}{\guillemotleft device\guillemotright\\Dispositivo cliente}
+    {\guillemotleft artifact\guillemotright\\Interface no navegador}
+  \nouml{servidor}{(7.0,0)}{\guillemotleft executionEnvironment\guillemotright\\Ambiente da aplicação}
+    {\guillemotleft artifact\guillemotright\\Serviço de inscrições}
+  \nouml{armazenamento}{(7.0,-5.0)}{\guillemotleft node\guillemotright\\Armazenamento durável}
+    {\guillemotleft artifact\guillemotright\\Eventos e inscrições}
+  \nouml{externos}{(0,-5.0)}{\guillemotleft node\guillemotright\\Ambientes externos}
+    {\guillemotleft artifact\guillemotright\\Catálogo e identidade}
+  \draw (cliente.east) -- node[uml/rotulo,above]{HTTPS} (servidor.west);
+  \draw (servidor.south) -- node[uml/rotulo,right,text width=30mm]
+    {acesso ao\\armazenamento} (armazenamento.north);
+  \draw (externos.north east) -- node[uml/rotulo,above,sloped]
+    {INT-001 / INT-002} (servidor.south west);
+\end{tikzpicture}

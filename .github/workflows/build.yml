@@ -1,0 +1,27 @@
+name: Compilar e verificar SRS
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Instalar dependências
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-lang-portuguese texlive-latex-extra texlive-fonts-recommended lmodern python3
+      - name: Compilar e verificar
+        run: make check
+      - name: Disponibilizar PDF
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: modelo-srs
+          path: build/srs.pdf
+          if-no-files-found: error

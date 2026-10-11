@@ -1,0 +1,156 @@
+\chapter{Modelagem UML e modelos de apoio}\label{cap:uml}
+
+\section{Leitura e finalidade dos modelos}
+Os modelos representam perspectivas diferentes do mesmo domínio e usam a
+notação UML como referência \cite{uml251}. Casos de uso mostram objetivos dos
+atores; classes mostram conceitos; sequência mostra mensagens; atividades
+mostram decisões; estados mostram o ciclo de vida de uma inscrição.
+Os contratos e as fichas continuam definindo as obrigações do produto.
+
+\begin{quadrosrs}
+\caption{Perguntas respondidas pelos modelos}
+\begin{tabelasrs}{L{0.25\textwidth}Y}
+\cabecalhosrs\textbf{Modelo} & \textbf{Pergunta e vínculo com a especificação}\\\midrule
+Casos de uso & Quem consulta, inscreve e cancela? \ucref{UC-001} a \ucref{UC-004}.\\
+Classes & Quais conceitos, atributos e cardinalidades existem? Dicionário da \autoref{tab:dados}.\\
+Sequência e atividades & Como a inscrição responde à repetição, recusa e falha? \reqref{RF-002}, \reqref{RF-003} e contrato HTTP.\\
+Estados & Como uma inscrição passa de ativa a cancelada? \autoref{fig:uml-estados}, no \autoref{ap:glossario}.\\
+Componentes, implantação e pacotes & Como distribuir responsabilidades, execução e dependências? Exemplos de design compatíveis com o domínio.\\
+Dados e rastreabilidade & Como relacionar entidades e ligar obrigação a teste? Modelos complementares; DER e grafo de rastreabilidade não são diagramas UML.\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}
+
+Uma linha de associação liga ator e objetivo ou conceitos relacionados.
+Multiplicidades indicam quantas instâncias participam de uma relação.
+Setas tracejadas representam dependência nos modelos de design e retorno
+no diagrama de sequência. Guardas entre colchetes delimitam caminhos.
+O traço \texttt{/} antes de um atributo indica valor derivado.
+
+\clearpage
+\section{Casos de uso e fronteira}
+A \autoref{fig:uml-casos} reúne os quatro casos já especificados no
+\autoref{cap:casos}. Os atores ficam fora da fronteira do sistema.
+Participante autenticado também pode consultar o catálogo público.
+Autenticação é condição das operações pessoais; não é um cadastro de contas
+implementado pelo produto. Duplicidade é uma alternativa de \ucref{UC-001},
+conforme \reqref{RF-003}, e não um objetivo independente do ator.
+
+\diagramasrs{UML de casos de uso do sistema de inscrições}{fig:uml-casos}
+  {\input{diagramas/uml/casos-de-uso}}
+
+\clearpage
+\section{Classes do domínio}
+A \autoref{fig:uml-classes} representa conceitos e operações do domínio,
+sem controllers, tabelas de senhas ou classes de framework.
+Participante representa a identidade externa, não uma obrigação de armazenar
+perfil local. Cada inscrição tem um evento e um titular; cada evento ou titular
+pode ter vários registros históricos, inclusive cancelados.
+
+\diagramasrs{UML de classes conceituais e cardinalidades}{fig:uml-classes}
+  {\input{diagramas/uml/classes}}
+
+A restrição de \rnref{RN-001} limita os registros \textbf{ativos}, não todo o
+histórico. \texttt{/vagas} é capacidade menos inscrições ativas.
+O atributo \texttt{canceladaEm} tem multiplicidade \texttt{0..1}, respeitando
+o dicionário. As operações indicam responsabilidades conceituais; a criação
+atômica é responsabilidade do sistema e não de uma coleção manipulada pela UI.
+
+\clearpage
+\section{Sequência da inscrição}
+A interação da \autoref{fig:uml-sequencia} detalha uma solicitação com corpo
+e sessão válidos. Validação recusada interrompe o fluxo antes da leitura pessoal,
+como mostram o contrato e a atividade da \autoref{fig:uml-atividades}.
+As quatro linhas de vida são papéis lógicos; não estabelecem quatro serviços
+implantados. Mensagens contínuas têm ponta preenchida e retornos são tracejados.
+
+\diagramasrs{UML de sequência de UC-001 e seus resultados}{fig:uml-sequencia}
+  {\input{diagramas/uml/sequencia}}
+
+O fragmento \texttt{critical} representa o trecho protegido contra concorrência.
+O fragmento \texttt{alt} separa resultados alternativos.
+Se a resposta se perder após a confirmação, a repetição percorre o caminho
+de registro existente; não consome outra vaga, conforme \reqref{RF-003}.
+
+\clearpage
+\section{Atividades, decisões e exceções}
+O fluxo da \autoref{fig:uml-atividades} liga as guardas de sessão, duplicidade
+e elegibilidade. Os nós finais encerram caminhos alternativos da mesma atividade.
+Corpo inválido ou sessão inválida impede acesso pessoal; ausência de vaga,
+publicação ou prazo impede nova criação. Uma inscrição ativa existente é
+consultada antes dessas condições de criação.
+
+\diagramasrs{UML de atividades para criação e repetição da inscrição}{fig:uml-atividades}
+  {\input{diagramas/uml/atividades}}
+
+Leitura consistente, validação e gravação do trecho de domínio fazem parte da
+operação atômica de \rnref{RN-001}. Um erro não altera registros nem vagas.
+Falha de leitura também encerra a operação com 503, antes de avaliar o resultado.
+Os limites exatos de prazo são exercitados por \ctref{CT-002} e \ctref{CT-004}.
+
+\clearpage
+\section{Componentes e responsabilidades}
+As três vistas de design a seguir são exemplos de organização, independentes
+de tecnologia. Não acrescentam infraestrutura obrigatória aos requisitos.
+Na \autoref{fig:uml-componentes}, a aplicação coordena os casos de uso,
+o domínio reúne regras e a persistência conserva eventos e inscrições.
+Uma dependência aponta do consumidor para aquilo que ele usa.
+
+\diagramasrs{UML de componentes em uma decomposição didática}{fig:uml-componentes}
+  {\input{diagramas/uml/componentes}}
+
+Catálogo e identidade continuam fora da responsabilidade do produto.
+Se a implementação tiver componentes diferentes, conserve o vínculo com os
+contratos INT-001 e INT-002 e com \reqref{RNF-004}.
+Separação de componentes não significa, por si só, microserviços ou processos
+independentes. As interfaces oferecidas e consumidas podem ser detalhadas em
+uma especificação de design associada aos IDs dos requisitos.
+
+\clearpage
+\section{Implantação e artefatos}
+A \autoref{fig:uml-implantacao} distingue nós de execução, artefatos e caminhos
+de comunicação. O serviço e seu armazenamento têm responsabilidades diferentes:
+reiniciar o processo da aplicação não remove os registros confirmados.
+
+\diagramasrs{UML de implantação em um ambiente de referência}{fig:uml-implantacao}
+  {\input{diagramas/uml/implantacao}}
+
+O desenho não fixa provedor de nuvem, banco de dados ou número de máquinas.
+Ambiente, recursos, dados e carga de \reqref{RNF-001} delimitam seu teste;
+procedimentos de backup, recuperação e suporte são tratados no
+\autoref{ap:complementar}.
+
+\clearpage
+\section{Pacotes e direção das dependências}
+Na organização didática da \autoref{fig:uml-pacotes}, apresentação usa os casos
+de uso; aplicação usa os conceitos e contratos do domínio; adaptadores usam
+esses contratos para tratar persistência e integrações.
+
+\diagramasrs{UML de pacotes em uma organização de código possível}{fig:uml-pacotes}
+  {\input{diagramas/uml/pacotes}}
+
+Os adaptadores são conectados na composição da aplicação. O pacote de domínio
+não precisa conhecer HTTP, navegador ou detalhes do banco. Nomes de diretórios
+e linguagens concretas pertencem ao design da implementação, não ao enunciado
+de uma necessidade do usuário.
+
+\section{Dados e rastreabilidade como modelos complementares}
+A \autoref{fig:dados-logicos} expressa um modelo de dados lógico, usando
+entidades, chaves e cardinalidade. O dicionário da \autoref{tab:dados} define
+os tipos, a nulabilidade e as regras completas.
+
+\diagramasrs{Modelo entidade-relacionamento de apoio, sem notação UML}{fig:dados-logicos}
+  {\input{diagramas/complementares/dados}}
+
+\clearpage
+O grafo da \autoref{fig:rastreio-modelos} ilustra uma relação entre objetivo,
+regra, requisito, caso de uso e cenário de teste. É um exemplo de rastreabilidade,
+sem introduzir um novo tipo de requisito ou substituir a matriz completa da
+\autoref{tab:rastreabilidade}.
+
+\diagramasrs{Relações entre uma obrigação do produto e sua verificação}{fig:rastreio-modelos}
+  {\input{diagramas/complementares/rastreabilidade}}
+
+Na adaptação, conferir que nomes, campos, guardas e multiplicidades correspondem
+às fichas. Um diagrama deve tornar uma decisão mais clara; um desenho que
+contradiz o contrato precisa ser corrigido junto do texto correspondente.

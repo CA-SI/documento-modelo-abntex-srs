@@ -1,0 +1,9 @@
+\begin{tikzpicture}
+  \pacoteuml{apresentacao}{(0,0)}{Apresentação}
+  \pacoteuml{aplicacao}{(7.5,0)}{Aplicação}
+  \pacoteuml{adaptadores}{(0,-4.0)}{Adaptadores}
+  \pacoteuml{dominio}{(7.5,-4.0)}{Domínio}
+  \draw[uml/dependencia] (apresentacao) -- node[uml/rotulo,above,text width=24mm]{usa casos\\de uso} (aplicacao);
+  \draw[uml/dependencia] (aplicacao) -- node[uml/rotulo,right]{usa conceitos e portas} (dominio);
+  \draw[uml/dependencia] (adaptadores) -- node[uml/rotulo,above,text width=24mm]{usa contratos\\do domínio} (dominio);
+\end{tikzpicture}

@@ -1,0 +1,72 @@
+\chapter{Regras de negócio e dados}\label{cap:regras}
+
+\section{Catálogo de regras}
+Uma regra expressa uma restrição do domínio. As fichas indicam os comportamentos
+que a aplicam, e a matriz liga cada comportamento aos testes correspondentes.
+As regras abaixo são hipóteses explícitas do produto fictício.
+
+\begin{quadrosrs}
+\caption{Regras e requisitos associados}
+\begin{tabelasrs}{L{0.15\textwidth}YL{0.26\textwidth}}
+\cabecalhosrs\textbf{Regra} & \textbf{Enunciado} & \textbf{Aplicação}\\\midrule
+\phantomsection\label{rn:RN-001}\texttt{RN-001} & Uma pessoa tem no máximo uma inscrição ativa por evento; o total de inscrições ativas não supera a capacidade. & \reqref{RF-002}, \reqref{RF-003} e \reqref{RF-004}.\\
+\phantomsection\label{rn:RN-002}\texttt{RN-002} & Criar ou cancelar uma inscrição exige instante estritamente anterior ao início do evento. A igualdade encerra o prazo. & \reqref{RF-002} e \reqref{RF-004}.\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}
+
+A capacidade não pode ser reduzida para um valor inferior ao total de inscrições
+ativas. Uma atualização externa que viole essa condição é rejeitada, preservando
+os dados anteriores. A decisão de prazo e vaga usa o estado validado na operação
+atômica de persistência.
+
+\section{Dicionário de dados}
+Identificadores são textos opacos, não vazios, com até 64 caracteres; não
+transportam credenciais. A relação com participante usa somente a identidade
+fornecida pelo serviço externo. Os nomes abaixo também orientam os contratos JSON.
+Empates de início ou criação são desfeitos pela ordem lexicográfica dos
+identificadores, comparando pontos de código Unicode, sem ignorar maiúsculas
+ou aplicar regras de ordenação por idioma.
+
+\begingroup\small\renewcommand{\arraystretch}{1.22}
+\setlength{\tabcolsep}{5pt}
+\begin{longtable}{L{0.29\textwidth}L{0.17\textwidth}L{0.12\textwidth}L{\dimexpr0.42\textwidth-8\tabcolsep\relax}}
+\caption{Dados e restrições do domínio}\label{tab:dados}\\
+\toprule\cabecalhosrs\textbf{Entidade e campo} & \textbf{Tipo lógico} & \textbf{Obrig.} & \textbf{Regra e significado}\\\midrule
+\endfirsthead
+\multicolumn{4}{l}{\textit{Dicionário de dados (continuação)}}\\
+\toprule\cabecalhosrs\textbf{Entidade e campo} & \textbf{Tipo lógico} & \textbf{Obrig.} & \textbf{Regra e significado}\\\midrule
+\endhead
+\midrule\multicolumn{4}{r}{\textit{Continua na próxima página.}}\\\endfoot
+\bottomrule\endlastfoot
+Evento: \texttt{id} & Identificador & Sim & Único; recebido do catálogo externo.\\\hline
+Evento: \texttt{nome} & Texto & Sim & Nome não vazio apresentado ao usuário.\\\hline
+Evento: \texttt{inicio} & Instante UTC & Sim & Limite para criação e cancelamento.\\\hline
+Evento: \texttt{capacidade} & Inteiro & Sim & Não negativo; não inferior às inscrições ativas.\\\hline
+Evento: \texttt{publicado} & Booleano & Sim & Determina elegibilidade para catálogo e novas inscrições.\\\hline
+Inscrição: \texttt{id} & Identificador & Sim & Único e imutável; gerado pelo produto.\\\hline
+Inscrição: \texttt{eventoId} & Identificador & Sim & Referência a um evento conhecido.\\\hline
+Inscrição: \texttt{participanteId} & Identificador & Sim & Titular proveniente da sessão; não informado pelo formulário.\\\hline
+Inscrição: \texttt{situacao} & Enumeração & Sim & Valores \texttt{ativa} ou \texttt{cancelada}.\\\hline
+Inscrição: \texttt{criadaEm} & Instante UTC & Sim & Momento da confirmação persistida.\\\hline
+Inscrição: \texttt{canceladaEm} & Instante UTC & Cond. & Nulo quando ativa; preenchido no primeiro cancelamento.\\\hline
+Evento: \texttt{vagas} & Inteiro derivado & Saída & Capacidade menos total de inscrições ativas; não negativo.\\
+\end{longtable}
+\endgroup
+
+\section{Invariantes e consistência}
+Cancelar conserva o registro e libera uma única vaga. Repetir a operação no
+prazo preserva situação, instante do primeiro cancelamento e vagas. Uma nova
+inscrição depois de cancelar recebe outro identificador e verifica novamente
+capacidade, publicação e prazo.
+
+Entradas inválidas e operações negadas não modificam registros nem contadores.
+Falha de gravação não autoriza uma confirmação de sucesso. Se a resposta se
+perder depois da confirmação persistida, a repetição da solicitação encontra
+ a inscrição ativa e retorna seu identificador, conforme \reqref{RF-003}.
+
+\section{Adequação ao domínio}
+Na adaptação do modelo, identifique finalidade e necessidade de cada dado,
+regras de retenção e exclusão, formatos de exportação, idiomas e obrigações
+contratuais aplicáveis. Transforme obrigações do produto em requisitos com ID,
+origem e aceite, e associe as regras às operações que as aplicam.

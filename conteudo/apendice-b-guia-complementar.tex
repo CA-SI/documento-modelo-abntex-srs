@@ -1,0 +1,336 @@
+\chapter{Guia complementar de adaptação}\label{ap:complementar}
+
+\section{Elicitação, perfis e jornada}\label{guia:elicitacao}
+Uma SRS liga uma necessidade a uma obrigação verificável. Ao adaptar o modelo,
+registre problema, evidência, impacto e indicador de sucesso antes de escolher
+a solução. Diferencie evidência observada, hipótese e decisão do produto.
+Uma origem de requisito identifica pessoa, documento ou regra; não demonstra,
+por si só, que uma entrevista ocorreu.
+
+\begin{quadrosrs}
+\caption{Técnicas de elicitação e registros úteis}
+\begin{tabelasrs}{L{0.22\textwidth}Y}
+\cabecalhosrs\textbf{Técnica} & \textbf{Registro para análise e validação}\\\midrule
+Entrevista & Papel do participante, roteiro, data, consentimento aplicável e síntese validada.\\
+Observação & Contexto, tarefa, dificuldade observada e diferença entre relato e comportamento.\\
+Oficina & Participantes, decisões, conflitos e fonte de cada regra acordada.\\
+Documentos e dados & Versão, procedência, limites de interpretação e regras extraídas.\\
+Protótipo & Tarefa avaliada, perfil do usuário, resultado observado e alteração justificada.\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}
+
+Descreva perfis por objetivo, contexto, frequência de uso, restrição de acesso e
+necessidade de acessibilidade. Uma persona resume essas características com a
+sua fonte; não substitui uma pessoa real na validação. Para cada stakeholder,
+registre representante, interesse, responsabilidade, influência e modo de
+participação, além dos papéis exemplificados na \autoref{cap:descricao}.
+
+Uma jornada pode organizar etapa, ação da pessoa, resposta do sistema,
+dificuldade e oportunidade. Neste domínio, consultar o catálogo, confirmar a
+inscrição, consultar seus registros e cancelar correspondem a \ucref{UC-003},
+\ucref{UC-001}, \ucref{UC-004} e \ucref{UC-002}. Cada etapa deve apontar para
+requisitos e aceite, evitando criar funcionalidades apenas no desenho.
+
+Uma história exemplificativa é: ``Como participante, quero consultar minhas
+inscrições para acompanhar sua situação''. Sua obrigação está em \reqref{RF-005}
+e sua verificação em \ctref{CT-008}. Histórias descrevem valor; as fichas e os
+cenários Dado/Quando/Então delimitam comportamento e exceções.
+
+\clearpage
+\section{Qualidade dos requisitos e da documentação}\label{guia:qualidade}
+Revise cada enunciado quanto a atomicidade, clareza, viabilidade, consistência,
+necessidade, rastreabilidade e verificação. Condições e unidades eliminam
+interpretações como ``sempre disponível'' ou ``tempo aceitável''. Além das
+categorias demonstradas pelos RNF deste modelo, avalie as necessidades do produto:
+
+\begin{quadrosrs}
+\caption{Categorias complementares de qualidade}
+\begin{tabelasrs}{L{0.24\textwidth}Y}
+\cabecalhosrs\textbf{Categoria} & \textbf{Pergunta para especificar e medir}\\\midrule
+Usabilidade e acesso & Quais tarefas, perfis, tecnologias assistivas, contraste, tamanho de texto e treinamento precisam de verificação?\\
+Confiabilidade & Qual falha é medida? Qual janela, taxa de erro, disponibilidade, precisão de resultado ou tempo de reparo é exigido?\\
+Desempenho & Qual carga, capacidade, taxa de transferência, uso de recursos, percentil e janela delimitam o resultado?\\
+Suportabilidade & Que diagnóstico, configuração, instalação, evolução e documentação permitem manter o produto?\\
+Interoperabilidade & Quais versões, formatos, limites, dependências e falhas de integração precisam de contrato?\\
+Restrições de design & Qual plataforma, padrão ou condição de implantação é obrigatória e qual é a origem dessa restrição?\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}
+
+Disponibilidade, tempo médio entre falhas e tempo médio de reparo exigem
+definições da população, do período e da falha. Não podem ser deduzidos apenas
+da escolha de Docker, de uma rede local ou de um fornecedor. Este guia não
+adiciona metas dessas categorias ao exemplo: uma nova obrigação exige ID,
+origem, métrica, meta e cenário de verificação.
+
+Especifique o comportamento em modo degradado e como identificar seu início e
+término. Para manutenção, relacione convenções de código, nomes, bibliotecas e
+utilitários à necessidade de suporte e à sua verificação.
+
+Documentação do produto pode incluir ajuda contextual, manual de uso,
+instalação, operação e contrato de API. Para cada artefato, defina público,
+conteúdo, formato, idioma, acesso, responsabilidade e critério de atualização.
+Defina também os resultados de consultas ou relatórios: campos e origem,
+filtros, ordenação, período, fuso, permissão, exportação e aceite. No exemplo,
+a representação de inscrições pessoais já é delimitada por \reqref{RF-005}.
+
+Na adaptação, identifique licença do software e dos recursos de terceiros,
+direitos de uso de conteúdo e marcas e normas aplicáveis com edição e cláusula.
+Relacione cada obrigação a uma fonte e à sua verificação. A licença do modelo
+documental não define a licença da aplicação que ele descreve. Usar uma classe
+de formatação também não demonstra conformidade integral com uma norma.
+
+\clearpage
+\section{Arquitetura, dados e decisões}\label{guia:arquitetura}
+Escolha modelos de acordo com a pergunta. Uma visão de contexto mostra
+fronteiras; uma arquitetura funcional mostra capacidades; componentes e
+camadas mostram responsabilidades; classes e dados mostram conceitos e
+relações. Uma vista C4, quando utilizada, é complementar à UML. O nível de
+detalhe deve permitir conferir a correspondência com as fichas.
+
+\begin{quadrosrs}
+\caption{Obrigações que orientam decisões de design}
+\begin{tabelasrs}{L{0.25\textwidth}Y}
+\cabecalhosrs\textbf{Origem} & \textbf{Questão de arquitetura ou dados}\\\midrule
+\rnref{RN-001} & Como garantir capacidade e unicidade ativa na mesma operação, inclusive sob concorrência?\\
+\reqref{RNF-001} & Como verificar latência nas condições de carga e recursos especificadas?\\
+\reqref{RNF-002} & Em qual fronteira são verificadas sessão e titularidade em toda operação pessoal?\\
+\reqref{RNF-004} & Como separar ciclo de vida do processo e conservação dos dados confirmados?\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}
+
+O modelo conceitual descreve o domínio. O modelo lógico define entidades,
+chaves, cardinalidades e nulabilidade. O modelo físico escolhe tipos do banco,
+índices, restrições e migrações. A \autoref{fig:dados-logicos} e o dicionário
+são base para esse mapeamento; não equivalem a um script SQL executável.
+
+Neste exemplo, \texttt{eventoId} pode referenciar um evento local, mas
+\texttt{participanteId} identifica um titular externo. A implementação deve
+garantir no máximo uma inscrição \emph{ativa} por titular e evento, preservando
+os registros cancelados. Uma restrição de unicidade sobre todo o histórico
+impediria a reinscrição permitida por \reqref{RF-004}. Tipos, unidades,
+sensibilidade e regras de exclusão precisam acompanhar cada campo no esquema
+físico. Não transportar automaticamente cascatas, senhas ou tabelas de outro
+domínio para essa aplicação.
+
+Registre decisões arquiteturais em ADRs: título, contexto e forças, opções
+consideradas, decisão, estado da decisão e consequências. Evidências e
+requisitos justificam a escolha. Um ADR trata uma decisão; alterações de
+contrato precisam atualizar a SRS e seus testes. A política de versionamento
+de dados, migrações e reversão também deve relacionar esquema e versão do serviço.
+
+\clearpage
+\section{Segurança e privacidade}\label{guia:seguranca}
+Classifique os dados e delimite acesso, finalidade, retenção e descarte. A
+classificação informa o design e os testes; não substitui o contrato de
+titularidade da \reqref{RNF-002}.
+
+\begin{quadrosrs}
+\caption{Classificação exemplificativa dos dados}
+\begin{tabelasrs}{L{0.19\textwidth}YY}
+\cabecalhosrs\textbf{Classe} & \textbf{Exemplo} & \textbf{Cuidado de especificação}\\\midrule
+Público & Eventos publicados e vagas. & Delimitar campos e momento de publicação.\\
+Interno & Configuração e diagnóstico. & Definir acesso e retirar detalhes internos de erros públicos.\\
+Pessoal & Titular e suas inscrições. & Minimizar coleta e aplicar acesso do próprio titular.\\
+Segredo & Credencial de sessão ou integração. & Proteger uso e evitar gravação em logs ou documentos.\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}
+
+Para cada dado pessoal, registre finalidade, necessidade, fundamento aplicável,
+prazo ou evento de retenção, responsáveis, autorização de acesso e procedimentos
+de consulta, exportação e exclusão. Delimite também dados de telemetria e
+terceiros que recebem informações. O domínio usa identidade externa e não
+especifica cadastro de senha local. A conservação do histórico no exemplo não
+estabelece retenção ilimitada nem inventa uma política legal de descarte.
+
+Analise ameaças por caminho de acesso: identidade falsa, alteração indevida,
+negação de uma operação realizada, divulgação de informações, esgotamento de
+recursos e elevação de privilégio. Registre ativo, atacante ou condição,
+consequência, controle e cenário de verificação. Um catálogo de controles pode
+ajudar a revisão, mas a seleção precisa estar ligada ao contexto e a uma versão
+identificada; mencionar um catálogo não comprova atendimento.
+
+No exemplo, \ctref{CT-006} verifica sessão, titularidade e rejeição de titular
+forjado no corpo. \ctref{CT-002} verifica concorrência e capacidade.
+Controles de transporte, limites de requisição, proteção de segredos e auditoria
+que forem exigidos na adaptação devem receber seus próprios critérios de aceite.
+Não deduza uma certificação de segurança ou acessibilidade a partir desses testes.
+
+\clearpage
+\section{Riscos e priorização}\label{guia:riscos}
+Um registro de risco relaciona condição, probabilidade, impacto, resposta,
+responsável e gatilho de acompanhamento. As situações abaixo ilustram como
+ligar risco a obrigações já existentes; não representam uma avaliação realizada
+com uma equipe ou dados de produção.
+
+\begin{fichasrs}{Exemplos de riscos ligados à especificação}
+\campoficha{Última vaga}{Condição: duas pessoas confirmam simultaneamente. Impacto: exceder a capacidade. Resposta: atomicidade e verificação de \rnref{RN-001} por \ctref{CT-002}. Responsabilidade de acompanhamento: equipe do produto. Gatilho: divergência entre capacidade e total ativo.}
+\campoficha{Acesso indevido}{Condição: tentativa de consultar ID de outra pessoa. Impacto: exposição de registro pessoal. Resposta: sessão e titularidade em toda operação; \ctref{CT-006}. Responsabilidade de acompanhamento: equipe do produto. Gatilho: resposta pessoal sem autorização.}
+\campoficha{Perda confirmada}{Condição: reinício normal do serviço. Impacto: sumiço de um registro confirmado. Resposta: persistência independente do processo e \ctref{CT-009}. Responsabilidade de acompanhamento: operação do produto. Gatilho: diferença entre registros antes e depois do reinício.}
+\campoficha{Avaliação}{Para um projeto concreto, atribuir ID, origem, probabilidade e impacto com escala e justificativa, resposta, responsável nominal, data de análise e condição de reavaliação.}
+\end{fichasrs}
+
+A escala Alta/Média/Baixa da \autoref{cap:introducao} permanece como prioridade
+das fichas. Outras técnicas podem apoiar a seleção de uma entrega: separar
+essencial, desejável e opcional; comparar valor e esforço; considerar risco,
+urgência e dependências. Quando usar pontuação, declare fórmula, unidades e
+fontes. Uma pontuação não altera automaticamente uma obrigação acordada.
+
+Mudanças de escopo precisam de análise de impacto sobre dados, interfaces,
+modelos, testes e custo. Registre a decisão e mantenha os IDs, inclusive quando
+uma obrigação for substituída. A matriz completa permanece na
+\autoref{tab:rastreabilidade}; um diagrama ilustra relações, mas não dispensa
+a conferência de cobertura.
+
+\clearpage
+\section{Processo, cronograma e custos}\label{guia:planejamento}
+Escolha o processo conforme incerteza, feedback, tamanho da equipe e exigência
+de aprovação. Entregas incrementais permitem validar partes; Kanban organiza
+fluxo e limites de trabalho; Scrum organiza ciclos e responsabilidades;
+um processo sequencial organiza etapas; uma abordagem híbrida combina práticas
+com suas justificativas. A escolha não decorre apenas do nome da disciplina.
+
+\begin{quadrosrs}
+\caption{Campos de planejamento e estimativa}
+\begin{tabelasrs}{L{0.24\textwidth}Y}
+\cabecalhosrs\textbf{Artefato} & \textbf{Conteúdo necessário}\\\midrule
+Mapa de entregas & Objetivo, escopo por IDs, dependências e critério de saída de cada incremento.\\
+Cronograma & Atividade, início, término, dependência, responsável e marco verificável; um Gantt representa essas relações.\\
+Estimativa & Unidade, intervalo, premissas, método, capacidade disponível e fonte da estimativa.\\
+Responsabilidades & Quem executa, quem responde pela decisão, quem é consultado e quem recebe informação.\\
+Custos & Quantidade, unidade, taxa, período, fonte e subtotal de cada categoria.\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}
+
+Uma matriz RACI pode registrar responsável pela execução (R), responsável final
+(A), consultados (C) e informados (I). Defina uma autoridade final por atividade
+e confirme os papéis com as pessoas. Stakeholder, representante e responsável
+pela tarefa não são necessariamente o mesmo papel.
+
+Expresse esforço em horas ou pessoas-dia, deixando explícita a conversão e a
+capacidade. Esforço agregado não é igual ao prazo de calendário. Considere
+dependências, revisão, integração e testes ao estimar intervalos. Não apresente
+datas, nomes ou valores de um exemplo como compromissos reais.
+
+Calcule custo de pessoas como soma de horas por papel multiplicadas pela taxa
+por hora. Some infraestrutura, ferramentas, serviços e outros custos do mesmo
+período. Declare hipóteses de contingência e evite contar um custo duas vezes.
+Apresente subtotais por etapa e total, moeda, período e fontes das taxas.
+Estabeleça como uma alteração de escopo afeta essas estimativas.
+
+\clearpage
+\section{Configuração, integração e entrega}\label{guia:entrega}
+Controle versões de código, especificação, diagramas, esquema e configuração
+de infraestrutura. Identifique mudanças por data, versão, autor, descrição e
+IDs afetados; o histórico Git permite recuperar versões. Credenciais e dados
+pessoais de produção não pertencem ao repositório. Defina política de branches,
+revisão por PR, versões, tags e notas de entrega conforme o projeto.
+
+\begin{quadrosrs}
+\caption{Ambientes e evidência de entrega da aplicação}
+\begin{tabelasrs}{L{0.18\textwidth}YY}
+\cabecalhosrs\textbf{Ambiente} & \textbf{Uso} & \textbf{Dados e evidência}\\\midrule
+Local & Desenvolvimento e diagnóstico. & Dados sintéticos e configuração documentada.\\
+Integração contínua & Build e verificações reproduzíveis. & Dados isolados, logs e resultados ligados à versão.\\
+Homologação & Validação de contratos e fluxos integrados. & Dados controlados e diferenças de ambiente explícitas.\\
+Produção & Operação do produto. & Acesso autorizado, métricas e procedimentos de recuperação.\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}
+
+Um pipeline da aplicação pode encadear análise estática, testes unitários,
+verificações de segurança, build, testes de integração e contrato, ambiente
+temporário, testes de ponta a ponta e critérios de implantação. Registre
+artefato e resultado de cada etapa. O pipeline deste repositório compila e
+verifica o \emph{documento}; ele não executa os cenários do sistema fictício.
+
+Cada integração precisa delimitar formato, versão, autenticação, erros,
+limites, tempo de espera e política de repetição. Quando aplicável, descreva
+TLS, portas, restrições de rede, hardware e comportamento sem conectividade.
+Uma repetição precisa considerar idempotência, intervalo, limite e falha final.
+O contrato HTTP existente define resultados e precedência; parâmetros adicionais
+de operação devem ser acordados na adaptação, com verificação própria.
+
+Associe versões da aplicação e do esquema às migrações. Defina implantação,
+checagem de saúde, observação após a entrega e reversão. Rollback de código não
+reverte necessariamente mudanças de dados. Teste a compatibilidade e descreva
+como preservar registros confirmados durante uma recuperação.
+
+\clearpage
+\section{Observabilidade, suporte e recuperação}\label{guia:operacao}
+Uma operação precisa de sinais que permitam identificar falhas e seu impacto.
+Defina eventos, métricas e procedimentos com finalidade, responsável e acesso.
+
+\begin{quadrosrs}
+\caption{Sinais e procedimentos para especificar a operação}
+\begin{tabelasrs}{L{0.24\textwidth}Y}
+\cabecalhosrs\textbf{Item} & \textbf{Definição e verificação}\\\midrule
+Erros e logs & Mensagem segura ao usuário, diagnóstico interno e identificador de correlação; excluir segredos e minimizar dados pessoais.\\
+Métricas & Latência, taxa de erro, volume e saturação; filas e tarefas, se existirem; indicador de negócio com unidade e janela.\\
+Rastreamento & Como relacionar uma solicitação às operações e integrações, com política de coleta e retenção.\\
+Suporte & Canal, horário, classificação de incidente, resposta, escalonamento e comunicação de resultado.\\
+Backup e restauração & Dados cobertos, frequência, proteção, retenção, procedimento e teste de restauração.\\
+Recuperação & Perda tolerável de dados (RPO), tempo tolerável para recuperar (RTO), responsáveis e evidência de execução.\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}
+
+Um indicador de nível de serviço (SLI) define o que é medido; um objetivo de
+nível de serviço (SLO) define limite e janela. Disponibilidade, latência e erro
+precisam indicar população, exclusões e método. Alertas devem apontar ação e
+responsável. Não confunda percentil de resposta com disponibilidade nem com
+uma garantia contratual de atendimento.
+
+O ensaio de \reqref{RNF-001} tem carga e janela próprias; não estabelece um SLO
+de produção. \reqref{RNF-004} cobre reinício normal com armazenamento preservado;
+não demonstra recuperação de desastre ou perda do armazenamento. Metas de
+backup, RPO e RTO seriam obrigações adicionais, a especificar e verificar
+quando exigidas pelo contexto.
+
+\clearpage
+\section{Portfólio de testes, aceite e revisão}\label{guia:aceite}
+Escolha testes pela obrigação e pelo tipo de falha. Registre ID do cenário,
+requisito, objetivo, condições, dados, passos, resultado esperado, tipo,
+responsável, localização da automação e evidência. Um resultado de execução
+identifica versão, ambiente, data e conclusão; o catálogo de cenários da SRS
+especifica o teste, sem afirmar que a aplicação foi executada.
+
+\begin{quadrosrs}
+\caption{Níveis de verificação e exemplos de finalidade}
+\begin{tabelasrs}{L{0.22\textwidth}Y}
+\cabecalhosrs\textbf{Nível ou foco} & \textbf{Falha que ajuda a identificar}\\\midrule
+Unidade & Cálculo e regras de elegibilidade em condições de limite.\\
+Integração & Atomicidade e conservação de registros reais no armazenamento.\\
+Contrato & Formatos, erros, permissões e versões nas interfaces.\\
+Ponta a ponta & Jornada completa entre interface e serviço com dados controlados.\\
+Qualidade & Carga, acesso indevido, teclado e reinício nas condições dos RNF.\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}
+
+Relacione obrigações a componentes responsáveis, cenários e evidências, além
+de objetivo e origem. A matriz e os procedimentos da \autoref{cap:verificacao}
+incluem alternativas, exceções, última vaga, repetição e limite exato de prazo.
+Confirme que uma alteração dos modelos não remove um desses caminhos.
+
+Critérios de conclusão e de aceite de uma entrega podem exigir revisão de
+alterações, build e testes aprovados, requisitos cobertos, risco analisado,
+segurança verificada, migração e reversão exercitadas, sinais de operação e
+documentação acessível. Defina quem avalia e qual evidência demonstra cada
+critério; uma lista preenchida sem evidência não comprova aprovação.
+
+Uma revisão acadêmica pode avaliar problema e escopo, qualidade dos requisitos,
+consistência dos modelos, adequação das decisões, qualidade e segurança,
+verificação e operação. Para cada dimensão, declare critério, evidência e escala
+de avaliação. Não transforme a rubrica em resultados atribuídos a este exemplo.
+
+Organize os artefatos por finalidade: contexto e fontes na descoberta;
+requisitos, contratos e aceite na especificação; modelos e ADRs no design;
+código e migrações na implementação; resultados na verificação; versão,
+procedimentos e indicadores na operação. Reavalie relações e vocabulário a cada
+mudança de escopo. Referências com versão e procedência tornam essa revisão
+rastreável.

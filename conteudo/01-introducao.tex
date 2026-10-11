@@ -1,0 +1,75 @@
+\chapter{Introdução}\label{cap:introducao}
+
+\section{Finalidade e problema}
+Uma especificação de requisitos de software (SRS) estabelece comportamentos,
+interfaces, regras e condições de qualidade observáveis de um produto. Ela
+permite que usuários, desenvolvimento e testes trabalhem com o mesmo contrato.
+Este guia-modelo conserva a base didática de \citeonline{srstex}, usa
+abn\TeX2\ \cite{abntex2} e demonstra uma especificação para um sistema fictício
+de inscrições em eventos.
+
+O problema do exemplo é controlar vagas e inscrições sem duplicidade, permitir
+que a pessoa acompanhe seus registros e respeitar o prazo de cada evento.
+As fichas especificam esse produto; as explicações orientam a adaptação do modelo.
+Os objetivos e metas apresentados são escolhas do exemplo, sem constituir
+resultados de entrevistas ou testes de um software implementado.
+
+\section{Objetivos do produto}
+\begin{quadrosrs}
+\caption{Objetivos e comportamentos associados}\label{tab:objetivos}
+\begin{tabelasrs}{L{0.14\textwidth}YY}
+\cabecalhosrs\textbf{ID} & \textbf{Objetivo} & \textbf{Comportamento observável}\\\midrule
+OBJ-001 & Encontrar eventos disponíveis. & Catálogo filtra publicação e início e apresenta vagas.\\
+OBJ-002 & Realizar e acompanhar inscrições válidas. & Confirmação persistida, controle de capacidade e consulta pessoal.\\
+OBJ-003 & Desistir de uma inscrição no prazo. & Cancelamento pelo titular e liberação de uma única vaga.\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}
+
+\Needspace{17\baselineskip}
+\section{Escopo e fronteiras}
+O produto consome eventos de um catálogo externo e identidades de um provedor
+externo. É responsável pelo catálogo público de consulta e pelo ciclo de vida
+das inscrições. A fronteira separa essas funções da administração dos serviços
+que fornecem eventos e autenticação.
+
+\begin{quadrosrs}
+\caption{Delimitação do escopo}
+\begin{tabelasrs}{YY}
+\cabecalhosrs\textbf{Dentro do produto} & \textbf{Fora do produto}\\\midrule
+Consultar eventos e inscrições pessoais. & Publicar e editar eventos no serviço de origem.\\
+Criar e cancelar inscrições; controlar vagas. & Cobrar pagamentos e emitir certificados.\\
+Aplicar sessão e titularidade nas operações. & Cadastrar credenciais e administrar o provedor de identidade.\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}
+
+\section{Convenções e priorização}
+Os identificadores são estáveis: \texttt{RF} para requisitos funcionais,
+\texttt{RNF} para qualidade, \texttt{RN} para regras, \texttt{UC} para casos de uso
+ e \texttt{CT} para testes. O número não muda quando uma seção é reorganizada.
+``Deve'' estabelece uma obrigação; origem, condições e aceite delimitam sua
+interpretação. Cada prioridade é explícita, sem herança automática entre fichas.
+
+\begin{quadrosrs}
+\caption{Escala de prioridade}
+\begin{tabelasrs}{L{0.17\textwidth}Y}
+\cabecalhosrs\textbf{Prioridade} & \textbf{Significado}\\\midrule
+Alta & Essencial para uma operação correta ou para proteção dos registros.\\
+Média & Qualidade complementar relevante para executar os fluxos previstos.\\
+Baixa & Melhoria opcional que não impede os objetivos essenciais.\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}
+
+Evite ``rápido'', ``seguro'' ou ``intuitivo'' sem condições e medidas. O aceite
+segue \textbf{Dado / Quando / Então}: situação inicial, ação e resultado
+observável. A engenharia de requisitos também envolve processos ao longo do
+ciclo de vida \cite{iso29148}; este guia não certifica conformidade com a norma.
+
+\section{Público e organização}
+Responsáveis pelo produto consultam objetivos, contexto e regras. A equipe de
+desenvolvimento usa também dados, interfaces e fichas. A equipe de testes usa
+os casos de uso e a matriz da \autoref{cap:verificacao}. O glossário e o modelo
+de estados estão no \autoref{ap:glossario}. A ordem de leitura acompanha o
+caminho necessidade, regra, contrato, requisito e verificação.

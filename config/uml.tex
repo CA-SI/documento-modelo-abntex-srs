@@ -1,0 +1,53 @@
+% Notação vetorial; não depende de PlantUML, Java ou serviços externos.
+\usetikzlibrary{shapes.geometric,shapes.multipart,calc}
+\tikzset{
+  uml/caixa/.style={draw=srslinha,fill=white,align=center,font=\small,inner sep=5pt},
+  uml/caso/.style={uml/caixa,ellipse,text width=38mm,minimum height=17mm},
+  uml/classe/.style={uml/caixa,rectangle split,rectangle split parts=3,
+    rectangle split part align={center,left,left},text width=48mm},
+  uml/componente/.style={uml/caixa,rectangle,text width=35mm,minimum height=18mm},
+  uml/acao/.style={uml/caixa,rounded corners=4pt,text width=43mm,minimum height=10mm},
+  uml/decisao/.style={uml/caixa,diamond,aspect=2.5,text width=25mm,inner sep=1pt},
+  uml/estado/.style={uml/caixa,rounded corners=6pt,fill=srscabecalho,
+    minimum width=30mm,minimum height=13mm},
+  uml/fluxo/.style={-{Stealth[length=2mm]},semithick},
+  uml/chamada/.style={-{Triangle[length=2mm,width=1.7mm]},semithick},
+  uml/retorno/.style={dashed,-{Straight Barb[length=2mm]},semithick},
+  uml/dependencia/.style={dashed,-{Straight Barb[length=2mm]},semithick},
+  uml/rotulo/.style={font=\footnotesize,align=center,inner sep=2pt},
+  uml/nota/.style={draw=srslinha,dashed,align=left,font=\footnotesize,
+    fill=white,text width=55mm,inner sep=5pt}
+}
+
+\newcommand{\atoruml}[3]{%
+  \begin{scope}[shift={#2}]
+    \node[minimum width=8mm,minimum height=15mm,inner sep=0pt] (#1) at (0,0) {};
+    \draw (0,0.48) circle (0.16);
+    \draw (0,0.32) -- (0,-0.22);
+    \draw (-0.32,0.12) -- (0.32,0.12);
+    \draw (-0.27,-0.55) -- (0,-0.22) -- (0.27,-0.55);
+    \node[uml/rotulo,text width=25mm] at (0,-0.92) {#3};
+  \end{scope}}
+\newcommand{\finaluml}[2]{%
+  \node[draw,circle,minimum size=5mm,inner sep=0pt] (#1) at #2 {};
+  \fill (#1.center) circle (1.4mm);}
+\newcommand{\pacoteuml}[3]{%
+  \node[uml/caixa,minimum width=45mm,minimum height=15mm] (#1) at #2 {#3};
+  \draw[draw=srslinha] (#1.north west) -- ++(0,0.4) -- ++(1.5,0) -- ++(0,-0.4);}
+\newcommand{\nouml}[4]{%
+  \node[uml/caixa,text width=40mm,minimum height=36mm] (#1) at #2 {};
+  \node[font=\small,align=center,text width=43mm,anchor=north]
+    at ($(#1.north)+(0,-0.16)$) {#3};
+  \node[uml/caixa,text width=36mm,inner sep=3pt,anchor=south]
+    at ($(#1.south)+(0,0.16)$) {#4};
+  \draw[draw=srslinha] (#1.north west) -- ++(0.3,0.3)
+    -- ($(#1.north east)+(0.3,0.3)$) -- (#1.north east);
+  \draw[draw=srslinha] (#1.north east) -- ++(0.3,0.3)
+    -- ($(#1.south east)+(0.3,0.3)$) -- (#1.south east);}
+\newcommand{\diagramasrs}[3]{%
+  \begin{figurasrs}
+  \caption{#1}\label{#2}
+  \centering
+  #3\par
+  \fonte{Elaboração didática deste guia.}
+  \end{figurasrs}}

@@ -1,0 +1,14 @@
+\begin{tikzpicture}
+  \node[uml/estado] (ativa) at (0,0) {Ativa};
+  \node[uml/estado] (cancelada) at (7.0,0) {Cancelada};
+  \node[circle,fill=black,inner sep=2pt] (inicio) at (-2.6,0) {};
+  \draw[uml/fluxo] (inicio) -- (ativa);
+  \draw[uml/fluxo] (ativa) -- node[uml/rotulo,above,text width=48mm]
+    {cancelar [titular e no prazo]\\ / registrar instante; liberar uma vaga} (cancelada);
+  \draw[uml/fluxo] (ativa) edge[loop above,min distance=14mm]
+    node[uml/rotulo,above,text width=48mm]
+    {repetir criação [mesmo titular/evento]\\ / retornar mesmo ID} (ativa);
+  \draw[uml/fluxo] (cancelada) edge[loop below,min distance=14mm]
+    node[uml/rotulo,below,text width=52mm]
+    {repetir cancelamento [titular e no prazo]\\ / preservar instante e vagas} (cancelada);
+\end{tikzpicture}

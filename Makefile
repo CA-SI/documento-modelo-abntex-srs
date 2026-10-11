@@ -1,10 +1,24 @@
+LATEXMK ?= latexmk
+PYTHON ?= python3
+LATEXFLAGS = -pdf -interaction=nonstopmode -halt-on-error -file-line-error -outdir=build
+
+.PHONY: all check demo clean mrproper
+
 all:
-	xelatex srs.tex
-	xelatex srs.tex
-	$(MAKE) clean
+	$(LATEXMK) $(LATEXFLAGS) srs.tex
 
+check: all
+	$(PYTHON) scripts/verificar.py
+
+# Atualiza o PDF demonstrativo versionado somente após verificar a compilação.
+demo: check
+	mkdir -p exemplos
+	cp build/srs.pdf exemplos/srs-demonstracao.pdf
+
+# Limpa somente os auxiliares do SRS e preserva build/srs.pdf.
 clean:
-	rm -rf *.acn *.alg *.glg *.glo *.gls *.glsdefs *.ist *.xdy *.acr *.bbl *.blg *.aux *.dvi *.log *.lot *.idx *.toc *.lof *.brf *.out
+	$(LATEXMK) -c -outdir=build srs.tex
 
-mrproper: clean
-	rm -rf *.pdf
+# Remove também o PDF do SRS, sem atingir outros PDFs.
+mrproper:
+	$(LATEXMK) -C -outdir=build srs.tex

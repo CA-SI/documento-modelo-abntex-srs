@@ -1,0 +1,52 @@
+\chapter{Glossário e modelo de estados}\label{ap:glossario}
+
+\section{Termos e siglas}
+\begin{quadrosrs}
+\caption{Vocabulário do domínio e da especificação}
+\begin{tabelasrs}{L{0.24\textwidth}Y}
+\cabecalhosrs\textbf{Termo} & \textbf{Definição}\\\midrule
+Evento & Atividade com capacidade, instante de início e publicação.\\
+Participante & Pessoa identificada pelo provedor externo de identidade.\\
+Inscrição ativa & Registro que associa participante e evento e ocupa vaga.\\
+Inscrição cancelada & Registro conservado que não ocupa vaga.\\
+Precondição & Estado que delimita a execução de um comportamento.\\
+Critério de aceite & Resultado observável para avaliar uma obrigação do produto.\\
+Idempotência & Repetir uma operação sem acrescentar outro efeito sobre o estado.\\
+Rastreabilidade & Relação explícita entre objetivo, origem, requisito e verificação.\\
+SRS & Especificação de requisitos de software.\\
+UTC & Tempo Universal Coordenado, referência para armazenar instantes.\\
+p95 & Percentil 95: limite abaixo do qual ficam pelo menos 95\% das observações.\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}
+
+\Needspace{0.65\textheight}
+\section{Estados da inscrição}
+Os estados persistidos são ativa e cancelada. Ausência de inscrição ativa é uma
+condição para criar um novo registro, não um terceiro estado armazenado.
+
+\diagramasrs{UML de estados persistidos e transições permitidas}{fig:uml-estados}
+  {\input{diagramas/uml/estados}}
+
+O nó inicial representa o começo do ciclo de vida após uma criação elegível,
+sem gatilho ou guarda nessa seta. A elegibilidade da criação está no fluxo de
+atividades. As operações pessoais pressupõem sessão válida. As guardas das
+transições delimitam prazo e titularidade; os efeitos após a barra indicam
+o resultado da transição.
+Uma reinscrição cria outro registro e inicia sua própria máquina de estados;
+ não reativa a inscrição cancelada. Recusas não mudam o estado existente.
+
+
+\begin{quadrosrs}
+\caption{Condições de transição e efeito nas vagas}
+\begin{tabelasrs}{L{0.21\textwidth}YY}
+\cabecalhosrs\textbf{Condição inicial} & \textbf{Operação} & \textbf{Resultado}\\\midrule
+Sem inscrição ativa & Criar com vaga, publicação e no prazo. & Novo registro ativo; uma vaga consumida.\\
+Ativa & Repetir criação para mesmo participante/evento. & Mesmo ID e situação; vagas inalteradas.\\
+Ativa & Titular cancela no prazo. & Registro cancelado; uma vaga liberada.\\
+Cancelada & Titular repete cancelamento no prazo. & Mesmo instante de cancelamento e vagas.\\
+Sem inscrição ativa & Reinscrever após cancelamento, com vaga e no prazo. & Novo ID ativo; registro anterior conservado.\\
+Ativa & Cancelar no início ou depois dele. & Operação negada; registro permanece ativo.\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}

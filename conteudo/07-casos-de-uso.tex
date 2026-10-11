@@ -1,0 +1,120 @@
+\chapter{Casos de uso}\label{cap:casos}
+
+\section{Visão geral}
+Um caso de uso descreve o objetivo do ator e o caminho até um resultado.
+Precondições delimitam o estado inicial; alternativas são resultados previstos;
+exceções interrompem a operação sem atingir a pós-condição de sucesso.
+As etapas separam ações do ator e respostas do sistema.
+
+\begin{quadrosrs}
+\caption{Atores e objetivos dos casos de uso}
+\begin{tabelasrs}{L{0.15\textwidth}YY}
+\cabecalhosrs\textbf{Caso} & \textbf{Ator e objetivo} & \textbf{Requisitos}\\\midrule
+\ucref{UC-001} & Participante: inscrever-se. & \reqref{RF-002}, \reqref{RF-003}.\\
+\ucref{UC-002} & Participante: cancelar inscrição. & \reqref{RF-004}.\\
+\ucref{UC-003} & Visitante: consultar eventos. & \reqref{RF-001}.\\
+\ucref{UC-004} & Participante: consultar seus registros. & \reqref{RF-005}.\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}
+
+\Needspace{0.50\textheight}
+\section{UC-001: realizar inscrição}\label{uc:UC-001}
+\begin{fichasrs}{Condições de UC-001}
+\campoficha{Ator}{Participante autenticado (STK-002).}
+\campoficha{Objetivo}{Obter inscrição confirmada para um evento.}
+\campoficha{Precondições}{Sessão válida; evento conhecido. Vaga, publicação e prazo são verificados durante o fluxo, não presumidos pela interface.}
+\campoficha{Gatilho}{Participante confirma a intenção de se inscrever.}
+\campoficha{Pós-condição}{Uma inscrição ativa do titular é persistida e seu identificador é apresentado; somente uma vaga é consumida.}
+\campoficha{Relações}{\reqref{RF-002}, \reqref{RF-003}; \rnref{RN-001}, \rnref{RN-002}; \ctref{CT-002}, \ctref{CT-003}, \ctref{CT-006}.}
+\end{fichasrs}
+
+\begin{quadrosrs}
+\caption{Fluxo principal de UC-001}
+\begin{tabelasrs}{L{0.06\textwidth}YY}
+\cabecalhosrs\textbf{Nº} & \textbf{Ação do ator} & \textbf{Resposta do sistema}\\\midrule
+1 & Seleciona um evento do catálogo. & Mostra evento, início e vagas para confirmação.\\
+2 & Confirma a inscrição. & Valida sessão e obtém a identidade do titular.\\
+3 & Aguarda o resultado. & Verifica inscrição ativa existente; se não existe, valida publicação, prazo e vaga.\\
+4 & --- & Persiste a inscrição e o efeito na capacidade de forma atômica.\\
+5 & Consulta a confirmação. & Retorna o identificador persistido e mostra o resultado.\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}
+
+\begin{quadrosrs}
+\caption{Alternativas e exceções de UC-001}
+\begin{tabelasrs}{L{0.16\textwidth}L{0.13\textwidth}Y}
+\cabecalhosrs\textbf{Caminho} & \textbf{Etapa} & \textbf{Comportamento e término}\\\midrule
+A1: duplicidade & 3 & Retornar inscrição ativa existente, inclusive após o prazo; encerrar sem nova criação.\\
+A2: falta de vaga & 3 & Informar falta de vagas; encerrar sem gravar.\\
+A3: inelegibilidade & 3 & Negar evento não publicado ou prazo encerrado; encerrar sem gravar.\\
+E1: sessão inválida & 2 & Solicitar autenticação; não ler nem alterar inscrição pessoal.\\
+E2: falha de gravação & 4 & Informar indisponibilidade; não confirmar nem consumir vaga.\\
+E3: resposta perdida & 5 & Repetição encontra o registro confirmado e segue A1, sem duplicar.\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}
+
+\Needspace{0.50\textheight}
+\section{UC-002: cancelar inscrição}\label{uc:UC-002}
+\begin{fichasrs}{Condições de UC-002}
+\campoficha{Ator}{Titular autenticado de uma inscrição (STK-002).}
+\campoficha{Objetivo}{Desistir da inscrição e liberar sua vaga.}
+\campoficha{Precondições}{Sessão válida; identificador de inscrição conhecido pelo participante. O servidor verifica titularidade e prazo.}
+\campoficha{Gatilho}{Participante confirma o cancelamento.}
+\campoficha{Pós-condição}{Registro cancelado, instante do primeiro cancelamento registrado e uma única vaga liberada.}
+\campoficha{Relações}{\reqref{RF-004}; \rnref{RN-001}, \rnref{RN-002}; \ctref{CT-004}, \ctref{CT-006}, \ctref{CT-009}.}
+\end{fichasrs}
+
+\begin{quadrosrs}
+\caption{Fluxo principal de UC-002}
+\begin{tabelasrs}{L{0.06\textwidth}YY}
+\cabecalhosrs\textbf{Nº} & \textbf{Ação do ator} & \textbf{Resposta do sistema}\\\midrule
+1 & Abre suas inscrições e seleciona um registro ativo. & Mostra evento e opção de cancelar quando elegível.\\
+2 & Confirma o cancelamento. & Valida sessão, titularidade e instante anterior ao início.\\
+3 & --- & Altera a situação e libera uma vaga na mesma operação persistida.\\
+4 & Consulta o resultado. & Confirma o cancelamento e atualiza a situação exibida.\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}
+
+\begin{quadrosrs}
+\caption{Alternativas e exceções de UC-002}
+\begin{tabelasrs}{L{0.16\textwidth}L{0.13\textwidth}Y}
+\cabecalhosrs\textbf{Caminho} & \textbf{Etapa} & \textbf{Comportamento e término}\\\midrule
+A1: já cancelada & 2 & Se ainda no prazo, confirmar sem alterar o instante original ou as vagas.\\
+A2: prazo encerrado & 2 & Negar no início ou depois dele; conservar o registro.\\
+E1: sessão inválida & 2 & Solicitar autenticação; não alterar dados.\\
+E2: ausente/não autorizada & 2 & Responder como recurso inexistente, sem expor dados de outra pessoa.\\
+E3: falha de gravação & 3 & Informar indisponibilidade; conservar situação e vagas anteriores.\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}
+
+\Needspace{0.50\textheight}
+\section{UC-003: consultar eventos}\label{uc:UC-003}
+\begin{fichasrs}{Especificação de UC-003}
+\campoficha{Ator e objetivo}{Visitante (STK-001) deseja encontrar um evento futuro.}
+\campoficha{Precondições}{Base de eventos local disponível; sessão não é necessária.}
+\campoficha{Gatilho}{Visitante abre o catálogo.}
+\campoficha{Fluxo principal}{1. Visitante solicita a lista. 2. Sistema seleciona eventos publicados e futuros, calcula vagas e ordena. 3. Interface apresenta nome, início e vagas.}
+\campoficha{Alternativa A1}{Na seleção, nenhum evento é elegível: retornar lista vazia e informar ausência de resultados.}
+\campoficha{Exceção E1}{Na leitura, armazenamento indisponível: informar falha temporária e permitir nova tentativa.}
+\campoficha{Pós-condição}{Eventos elegíveis apresentados, sem alteração de dados.}
+\campoficha{Relações}{\reqref{RF-001}, \reqref{RNF-001}; \ctref{CT-001}, \ctref{CT-005}.}
+\end{fichasrs}
+
+\Needspace{0.50\textheight}
+\section{UC-004: consultar próprias inscrições}\label{uc:UC-004}
+\begin{fichasrs}{Especificação de UC-004}
+\campoficha{Ator e objetivo}{Participante (STK-002) deseja acompanhar suas inscrições.}
+\campoficha{Precondições}{Sessão válida.}
+\campoficha{Gatilho}{Participante abre a área de inscrições pessoais.}
+\campoficha{Fluxo principal}{1. Participante solicita a lista. 2. Sistema obtém a identidade da sessão e seleciona somente seus registros. 3. Interface mostra os dados em ordem decrescente de criação e oferece cancelamento nos registros elegíveis.}
+\campoficha{Alternativa A1}{Na seleção, não há registros do titular: apresentar lista vazia, sem incluir inscrições de outra pessoa.}
+\campoficha{Exceção E1}{Na validação, sessão ausente ou expirada: solicitar autenticação, sem retornar dados pessoais.}
+\campoficha{Exceção E2}{Na leitura, armazenamento indisponível: informar falha temporária.}
+\campoficha{Pós-condição}{Registros do titular apresentados, sem mudança de situação ou vagas.}
+\campoficha{Relações}{\reqref{RF-005}, \reqref{RNF-002}; \ctref{CT-006}, \ctref{CT-008}.}
+\end{fichasrs}

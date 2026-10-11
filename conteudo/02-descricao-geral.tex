@@ -1,0 +1,68 @@
+\chapter{Contexto e partes interessadas}\label{cap:descricao}
+
+\section{Perspectiva e responsabilidades}
+O produto recebe eventos publicados e associa inscrições a uma identidade
+externa. O catálogo de origem é responsável por publicar dados válidos; o
+provedor de identidade é responsável pela autenticação. O produto aplica as
+regras de prazo, capacidade e titularidade ao executar cada operação.
+
+\begin{quadrosrs}
+\caption{Necessidades e responsabilidades das partes interessadas}
+\begin{tabelasrs}{L{0.23\textwidth}YY}
+\cabecalhosrs\textbf{Parte interessada} & \textbf{Necessidade} & \textbf{Responsabilidade no exemplo}\\\midrule
+STK-001: visitante & Encontrar eventos futuros. & Consultar o catálogo público.\\
+STK-002: participante & Inscrever-se e acompanhar seus registros. & Confirmar ou cancelar a própria inscrição.\\
+STK-003: responsável pelo evento & Preservar capacidade e prazo. & Publicar eventos no serviço externo e definir suas condições.\\
+STK-004: equipe do produto & Entender e verificar as obrigações. & Manter contratos e relacionar requisitos a evidências de teste.\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}
+
+\section{Fronteira do sistema}
+A figura mostra somente atores e serviços externos. A persistência das
+inscrições faz parte da responsabilidade do produto e não é um ator externo.
+
+\begin{figurasrs}
+\caption{Contexto do sistema de inscrições}\label{fig:contexto}
+\centering
+\begin{tikzpicture}[
+  caixa/.style={draw=srslinha,rounded corners=2pt,align=center,font=\small,text width=30mm,minimum height=13mm},
+  principal/.style={caixa,fill=srscabecalho,text width=36mm,minimum height=23mm},
+  seta/.style={-{Stealth[length=2mm]},semithick},
+  rotulo/.style={font=\footnotesize,align=center,text width=22mm,inner sep=1pt}
+]
+\node[principal] (srs) at (0,0) {Sistema de\\inscrições};
+\node[caixa] (visitante) at (-6.2,1.6) {Visitante};
+\node[caixa] (participante) at (-6.2,-1.6) {Participante};
+\node[caixa] (catalogo) at (6.2,1.6) {Catálogo\\externo};
+\node[caixa] (identidade) at (6.2,-1.6) {Provedor de\\identidade};
+\draw[seta] (visitante.east) -- node[rotulo,above=3mm]{consulta\\pública} (srs.north west);
+\draw[seta] (participante.east) -- node[rotulo,below=3mm]{inscrição e\\cancelamento} (srs.south west);
+\draw[seta] (catalogo.west) -- node[rotulo,above=3mm]{eventos\\publicados} (srs.north east);
+\draw[seta] (identidade.west) -- node[rotulo,below=3mm]{identidade e\\sessão} (srs.south east);
+\end{tikzpicture}
+\fonte{Elaboração didática deste guia.}
+\end{figurasrs}
+
+\Needspace{22\baselineskip}
+\section{Ambiente, premissas e dependências}
+O ambiente de referência é uma aplicação web em português brasileiro, acessada
+por navegador com HTML, CSS e JavaScript. A interface apresenta datas no fuso
+\texttt{America/Sao\_Paulo}, enquanto os instantes de referência são mantidos
+em UTC. A especificação não impõe framework ou fornecedor de banco de dados.
+
+\begin{quadrosrs}
+\caption{Condições que delimitam a operação}
+\begin{tabelasrs}{L{0.23\textwidth}YY}
+\cabecalhosrs\textbf{Tipo e ID} & \textbf{Condição} & \textbf{Consequência}\\\midrule
+Premissa PRE-001 & Relógio do servidor é a referência de prazo. & Comparar início e operação no mesmo referencial.\\
+Dependência DEP-001 & Catálogo externo fornece eventos válidos. & Entrada inválida é rejeitada; preservar a última versão válida.\\
+Dependência DEP-002 & Provedor externo fornece identidade e sessão. & Novas sessões dependem do provedor; sessões existentes valem até expirar.\\
+Restrição RES-001 & Verificação de vaga e gravação são atômicas. & Concorrência não pode exceder a capacidade.\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}
+
+A consulta pública independe de sessão. Criar, consultar registros pessoais e
+cancelar exigem sessão válida. O direito de consultar e cancelar é verificado
+pela titularidade, não apenas pelo conhecimento do identificador.

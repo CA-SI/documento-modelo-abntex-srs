@@ -1,0 +1,84 @@
+\chapter{Requisitos não funcionais}\label{cap:qualidade}
+
+\section{Atributos e critérios de medição}
+As metas são parâmetros didáticos do produto fictício. Cada atributo informa
+métrica, limite, condições e procedimento, permitindo comparar o observado
+com o especificado. A aplicação real define suas metas com as partes interessadas.
+
+\begin{quadrosrs}
+\caption{Qualidade e método de verificação}
+\begin{tabelasrs}{L{0.17\textwidth}YL{0.34\textwidth}}
+\cabecalhosrs\textbf{ID} & \textbf{Categoria} & \textbf{Método}\\\midrule
+\reqref{RNF-001} & Desempenho & Teste de carga controlada.\\
+\reqref{RNF-002} & Segurança & Testes de sessão e titularidade.\\
+\reqref{RNF-003} & Acessibilidade operacional & Execução manual por teclado.\\
+\reqref{RNF-004} & Confiabilidade & Comparação de registros após reinício.\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}
+
+\Needspace{0.75\textheight}
+\section{Fichas de qualidade}
+\requisito[
+  categoria={Desempenho},
+  precondicoes={Servidor com duas CPUs virtuais, 4 GiB de memória e base de 10.000 eventos; 100 usuários concorrentes consultam o catálogo.},
+  metrica={Percentil 95 do tempo entre recepção da requisição e envio da resposta pelo servidor; quantidade de erros 5xx.},
+  meta={p95 de até 2 segundos; zero respostas 5xx durante a medição.},
+  verificacao={Aquecer por dois minutos e medir por dez minutos. Cada usuário virtual envia nova consulta após a resposta anterior, sem pausa artificial. Não incluir latência da rede do cliente.},
+  relacoes={\reqref{RF-001}; \ucref{UC-003}; \ctref{CT-005}.}
+]{RNF-001}{Tempo de consulta}{Alta}{OBJ-001; consulta do catálogo}
+{O sistema deve responder ao catálogo em até dois segundos no percentil 95,
+ com a carga, a base e os recursos definidos, sem respostas de erro do servidor.}
+{\aceite{as condições de carga e ambiente especificadas}
+{o catálogo é consultado durante a janela de medição}
+{o percentil 95 não supera dois segundos e nenhuma resposta 5xx é registrada}}
+
+\requisito[
+  categoria={Segurança},
+  precondicoes={Operações de inscrição e consulta pessoal recebem uma identidade validada pelo servidor.},
+  metrica={Quantidade de operações pessoais aceitas sem sessão válida ou sobre registro de outra pessoa.},
+  meta={Zero acessos ou alterações não autorizados nos cenários definidos.},
+  verificacao={Executar chamadas diretas à API sem sessão, com sessão expirada e com sessão de outra pessoa, incluindo tentativa de indicar titular no corpo.},
+  relacoes={\reqref{RF-002}; \reqref{RF-003}; \reqref{RF-004}; \reqref{RF-005}; \ctref{CT-006}.}
+]{RNF-002}{Isolar inscrições por titular}{Alta}{OBJ-002 e OBJ-003; perfis de usuário}
+{Toda criação, cancelamento e consulta de inscrições pessoais deve exigir
+ sessão válida. Consulta e cancelamento devem autorizar somente o titular.
+ O cliente não pode escolher o titular enviando outro identificador.}
+{\aceite{duas pessoas com inscrições e sessões distintas}
+{uma solicita a inscrição da outra por identificador ou altera o titular enviado}
+{nenhum dado alheio é exposto nem alterado; falta ou expiração de sessão nega
+ as operações pessoais, mantendo o catálogo público acessível}}
+
+\requisito[
+  categoria={Acessibilidade operacional},
+  precondicoes={Navegador do ambiente de referência; sessão válida e evento com vaga e no prazo.},
+  metrica={Etapas dos fluxos de inscrição e cancelamento que exigem mouse; controles sem foco visível ou inacessíveis.},
+  meta={Zero etapas que exijam mouse; todos os controles usados no fluxo são alcançáveis e têm foco visível.},
+  verificacao={Executar UC-001 e UC-002 com Tab, Shift+Tab, Enter e Espaço. Registrar a ordem do foco e a percepção de mensagens de resultado.},
+  relacoes={\ucref{UC-001}; \ucref{UC-002}; \ctref{CT-007}.}
+]{RNF-003}{Operar sem mouse}{Média}{OBJ-002 e OBJ-003; interface do participante}
+{O participante deve conseguir selecionar um evento, confirmar a inscrição
+ e cancelá-la usando somente o teclado, com foco visível e sem bloqueio da navegação.}
+{\aceite{um participante que usa somente o teclado}
+{ele percorre os fluxos de inscrição e cancelamento}
+{alcança e aciona todos os controles, identifica o foco e percebe a confirmação
+ de cada operação sem recorrer ao mouse}}
+
+\requisito[
+  categoria={Confiabilidade},
+  precondicoes={Inscrição confirmada ou cancelamento confirmado; reinício normal do processo da aplicação, preservando o armazenamento.},
+  metrica={Quantidade de registros confirmados perdidos ou alterados indevidamente após reinício.},
+  meta={Zero perdas; mesmos identificadores, titulares, situações e vagas.},
+  verificacao={Criar uma inscrição, cancelar outra, registrar os dados, reiniciar a aplicação e consultar novamente os registros e as vagas.},
+  relacoes={\reqref{RF-002}; \reqref{RF-004}; \reqref{RF-005}; \ctref{CT-009}.}
+]{RNF-004}{Conservar operações confirmadas}{Alta}{OBJ-002 e OBJ-003; persistência das inscrições}
+{O sistema deve conservar inscrições e cancelamentos já confirmados após
+ reinício normal da aplicação, mantendo os identificadores e o efeito nas vagas.}
+{\aceite{uma inscrição ativa e outra cancelada, ambas confirmadas}
+{a aplicação reinicia sem alteração do armazenamento e os registros são consultados}
+{os dados confirmados e a disponibilidade de vagas permanecem iguais aos anteriores}}
+
+Este último cenário mede conservação após reinício da aplicação; não mede
+recuperação de desastre ou perda do armazenamento. Na adaptação, trate outros
+atributos relevantes com métricas próprias, sem ampliar a interpretação de um
+critério além do procedimento declarado.

@@ -1,0 +1,19 @@
+\begin{tikzpicture}
+  \draw[draw=srslinha] (1.8,-5.0) rectangle (8.0,4.5);
+  \node[font=\small\bfseries] at (4.9,4.15) {Sistema de inscrições};
+  \atoruml{visitante}{(0,2.8)}{Visitante}
+  \atoruml{participante}{(0,-1.6)}{Participante\\autenticado}
+  \node[uml/caso] (catalogo) at (4.9,2.8) {\ucref{UC-003}\\Consultar eventos};
+  \node[uml/caso] (criar) at (4.9,0.7) {\ucref{UC-001}\\Realizar inscrição};
+  \node[uml/caso] (consultar) at (4.9,-1.5) {\ucref{UC-004}\\Consultar próprias\\inscrições};
+  \node[uml/caso] (cancelar) at (4.9,-3.8) {\ucref{UC-002}\\Cancelar inscrição};
+  \draw (visitante.east) -- (catalogo.west);
+  \draw (participante.east) -- (criar.west);
+  \draw (participante.east) -- (consultar.west);
+  \draw (participante.east) -- (1.5,-1.6) -- (1.5,-3.8) -- (cancelar.west);
+  \draw (participante.north east) -- (1.1,-0.3) -- (1.1,1.9) -- (catalogo.south west);
+  \node[uml/nota,text width=39mm] at (10.5,1.7)
+    {A consulta de eventos é pública, inclusive para quem já possui sessão.};
+  \node[uml/nota,text width=39mm] at (10.5,-1.8)
+    {Catálogo e identidade são integrações externas; sua administração fica fora dos casos de uso.};
+\end{tikzpicture}

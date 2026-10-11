@@ -1,0 +1,132 @@
+\chapter{Interfaces e contratos}\label{cap:interfaces}
+
+\section{Interface do usuário}
+A interface usa os mesmos resultados do contrato de serviço. Confirmação de
+inscrição só aparece depois da gravação; uma tentativa recusada explica sua
+causa sem modificar vagas ou registros.
+
+\begin{quadrosrs}
+\caption{Estados observáveis da interface}
+\begin{tabelasrs}{L{0.22\textwidth}YY}
+\cabecalhosrs\textbf{Estado} & \textbf{Informação ao usuário} & \textbf{Ação disponível}\\\midrule
+Catálogo disponível & Nome, início e vagas dos eventos elegíveis. & Selecionar evento.\\
+Catálogo vazio & Ausência de eventos elegíveis. & Consultar novamente.\\
+Inscrição confirmada & Identificador e evento da inscrição. & Consultar suas inscrições.\\
+Inscrição já existente & Identificador ativo e informação de duplicidade. & Abrir o registro existente.\\
+Operação recusada & Falta de vagas, prazo encerrado ou sessão inválida. & Escolher outro evento ou autenticar-se, conforme a causa.\\
+Falha temporária & Operação sem confirmação e opção de tentar novamente. & Repetir a solicitação com os mesmos dados.\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}
+
+Mensagens são compreensíveis, preservam dados válidos e não expõem pilhas de
+execução ou consultas internas. Os controles respeitam \reqref{RNF-003}.
+A tela de inscrições pessoais inclui registros cancelados, distinguindo-os dos
+ativos; o botão de cancelamento aparece somente quando a operação é elegível.
+
+\section{Integrações externas}
+\begin{quadrosrs}
+\caption{Produtores externos e responsabilidade do consumidor}
+\begin{tabelasrs}{L{0.25\textwidth}YY}
+\cabecalhosrs\textbf{Integração} & \textbf{Dados fornecidos} & \textbf{Validação e falha}\\\midrule
+INT-001: catálogo & ID, nome, início em UTC, capacidade e publicação. & Rejeitar dados inválidos ou capacidade inferior às inscrições ativas; conservar a última versão válida.\\
+INT-002: identidade & Identidade do participante e sessão com expiração. & Negar operações sem sessão válida; indisponibilidade impede novas sessões, preservando as existentes até expirar.\\
+\end{tabelasrs}
+\fonte{Elaboração didática deste guia.}
+\end{quadrosrs}
+
+A integração usa HTTPS e dados em UTF-8. Os campos de evento obedecem ao
+\autoref{tab:dados}. O instante de início recebido é convertido para UTC antes
+ de qualquer comparação; o fuso de exibição não altera o prazo.
+
+\section{Contrato HTTP de referência}
+O contrato abaixo é didático e independente de framework. As representações
+usam JSON e o prefixo \texttt{/api/v1}. As operações pessoais recebem a sessão
+pelo cabeçalho \texttt{Authorization}; a identidade é obtida pelo servidor.
+Os códigos de resposta seguem a semântica HTTP de \citeonline{http9110}.
+
+\begin{quadrosrs}
+\caption{Operações e respostas de sucesso}
+\begin{tabelasrs}{L{0.34\textwidth}YY}
+\cabecalhosrs\textbf{Método e recurso} & \textbf{Entrada e acesso} & \textbf{Resposta}\\\midrule
+GET \texttt{/eventos} & Público; sem corpo. & 200: lista de eventos elegíveis.\\
+POST \texttt{/inscricoes} & Sessão válida; \texttt{eventoId}. & 201: novo registro; 200: inscrição ativa existente.\\
+GET \texttt{/minhas-inscricoes} & Sessão válida; sem titular fornecido pelo cliente. & 200: registros do titular, inclusive cancelados.\\
+GET \texttt{/inscricoes/\{id\}} & Sessão válida; ID de inscrição do titular. & 200: registro autorizado.\\
+DELETE \texttt{/inscricoes/\{id\}} & Sessão válida; ID de inscrição do titular, no prazo. & 204: cancelamento realizado ou repetido; sem corpo.\\
+\end{tabelasrs}
+\fonte{Contrato didático deste guia.}
+\end{quadrosrs}
+
+Na criação, a resposta 201 inclui \texttt{Location} para o novo recurso. A
+repetição que encontra registro ativo usa 200 e conserva o identificador,
+mesmo que o evento já tenha começado: consultar um registro existente não cria
+uma nova inscrição. Instantes JSON incluem o sufixo \texttt{Z}, indicando UTC.
+
+As consultas de catálogo e de inscrições pessoais retornam arrays JSON; ausência
+de resultados é representada por \texttt{[]}. Cada evento contém \texttt{id},
+\texttt{nome}, \texttt{inicio} e \texttt{vagas}. A representação de inscrição,
+usada na criação e nas consultas, contém \texttt{id}, \texttt{eventoId},
+\texttt{situacao}, \texttt{criadaEm} e \texttt{canceladaEm}; este último campo
+é sempre presente e vale \texttt{null} enquanto ativa.
+
+\Needspace{25\baselineskip}
+\subsection{Exemplo de criação}
+\begin{verbatim}
+POST /api/v1/inscricoes
+Authorization: Bearer sessao-exemplo
+Content-Type: application/json
+
+{"eventoId": "evt-001"}
+
+201 Created
+Location: /api/v1/inscricoes/ins-001
+
+{
+  "id": "ins-001",
+  "eventoId": "evt-001",
+  "situacao": "ativa",
+  "criadaEm": "2026-10-20T14:00:00Z",
+  "canceladaEm": null
+}
+\end{verbatim}
+
+A resposta de duplicidade contém o mesmo registro com o código 200; a interface
+informa que a inscrição já existe. O exemplo pressupõe um evento publicado com
+vaga e início posterior ao instante de criação.
+
+\subsection{Erros e precedência}
+A sessão é validada antes de qualquer leitura pessoal. Consultar ou cancelar
+um ID inexistente ou pertencente a outra pessoa produz a mesma resposta 404.
+Após autorizar a operação, a criação verifica duplicidade antes das condições
+para novo registro; o cancelamento verifica o prazo antes de alterar o estado.
+
+\begin{quadrosrs}
+\caption{Respostas de falha e efeito nos dados}
+\begin{tabelasrs}{L{0.09\textwidth}L{0.40\textwidth}Y}
+\cabecalhosrs\textbf{HTTP} & \textbf{Código do produto} & \textbf{Condição e efeito}\\\midrule
+400 & \texttt{JSON\_INVALIDO} & Corpo não é JSON válido; não alterar dados.\\
+401 & \texttt{SESSAO\_INVALIDA} & Sessão ausente ou expirada; negar acesso pessoal.\\
+404 & \texttt{RECURSO\_NAO\_ENCONTRADO} & Evento desconhecido ou inscrição ausente/não autorizada; não expor titular.\\
+409 & \texttt{SEM\_VAGAS} & Capacidade esgotada para nova inscrição.\\
+409 & \texttt{PRAZO\_ENCERRADO} & Instante igual ou posterior ao início.\\
+409 & \texttt{EVENTO\_NAO\_PUBLICADO} & Evento não admite nova inscrição.\\
+422 & \texttt{DADOS\_INVALIDOS} & Tipo, campo obrigatório ou limite do dicionário não atendido.\\
+503 & \texttt{SERVICO\_INDISPONIVEL} & Leitura ou gravação não concluída; não confirmar sucesso.\\
+\end{tabelasrs}
+\fonte{Contrato didático deste guia.}
+\end{quadrosrs}
+
+Erros usam \texttt{codigo} e \texttt{mensagem} no corpo. A resposta 401 também
+inclui o cabeçalho \texttt{WWW-Authenticate} com valor \texttt{Bearer}.
+O corpo da criação aceita somente \texttt{eventoId}; campos extras são
+rejeitados com 422, incluindo um titular indicado pelo cliente.
+Uma recusa não altera inscrições nem
+vagas. Se a conexão falhar depois da gravação, o cliente pode repetir a criação:
+\reqref{RF-003} impede que uma segunda vaga seja consumida.
+
+\section{Hardware e comunicação}
+O exemplo não exige sensores ou equipamentos dedicados. Em outro domínio,
+registre dispositivos, protocolo, frequência, unidades e resposta à
+indisponibilidade. Descreva contratos e resultados necessários, evitando
+misturar decisões internas de implementação com obrigações externas do produto.
