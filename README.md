@@ -5,6 +5,11 @@ requisitos de software (SRS)**. Mantido pela comunidade de Sistemas de Informaç
 da **UFV, Campus Rio Paranaíba**, na organização
 [CA-SI — Centro Acadêmico de Sistemas de Informação](https://github.com/CA-SI#readme).
 
+**Autoria desta nova versão: Matheus Breguêz.** Este projeto é um **hard fork**
+de [SRS-Tex](https://github.com/jpeisenbarth/SRS-Tex), reformulado como guia-modelo
+abnTeX2 em português, com desenvolvimento independente e créditos da origem
+preservados.
+
 O documento explica cada parte de uma SRS e demonstra, com um sistema fictício
 de inscrições em eventos, requisitos funcionais e não funcionais, regras de
 negócio, dicionário de dados, contratos HTTP/JSON, casos de uso, critérios de
@@ -19,7 +24,7 @@ Usa a classe **abnTeX2**, com capa, folha de rosto, sumário, referências e
 apêndices. O conteúdo é dividido em arquivos para facilitar edição e revisão.
 
 **[Abrir o PDF de demonstração](exemplos/srs-demonstracao.pdf)** — versão
-compilada do exemplo, com 54 páginas, para consultar a apresentação, as fichas
+compilada do exemplo, com 55 páginas, para consultar a apresentação, as fichas
 e os diagramas sem instalar LaTeX.
 
 ## Compilar e verificar
@@ -124,6 +129,7 @@ srs.tex                   entrada e ordem do documento
 config/metadados.tex      projeto, autoria e dados da capa
 config/pacotes.tex        apresentação e comando de requisito
 config/uml.tex            estilos e comandos para os diagramas vetoriais
+conteudo/creditos.tex      autoria, procedência e agradecimentos
 conteudo/01-*.tex          introdução e convenções
 conteudo/02-*.tex          contexto, usuários e ambiente
 conteudo/03-*.tex          interfaces externas
@@ -149,8 +155,9 @@ build/                    PDF e auxiliares gerados (fora do Git)
 
 ## Origem e alcance normativo
 
-Este projeto deriva de [jpeisenbarth/SRS-Tex](https://github.com/jpeisenbarth/SRS-Tex),
-baseado no modelo de Karl E. Wiegers. A revisão dos forks e as decisões de
+Este hard fork tem como origem o [SRS-Tex de Jean-Philippe Eisenbarth](https://github.com/jpeisenbarth/SRS-Tex),
+baseado no modelo de Karl E. Wiegers. A nova versão é de **Matheus Breguêz**.
+A revisão dos forks e as decisões de
 aproveitamento estão em [docs/revisao-forks.md](docs/revisao-forks.md).
 
 A estrutura oferece um ponto de partida para engenharia de requisitos;
@@ -185,6 +192,17 @@ Este SRS não oferece um seletor de edições bibliográficas.
   apresentação da comunidade e catálogo de projetos.
 
 ## Créditos e licença
+
+**Matheus Breguêz é o autor desta nova versão brasileira e da reformulação
+do modelo como hard fork.** Sua contribuição inclui a adaptação para abnTeX2,
+a organização modular, a revisão das fichas e contratos, os diagramas UML,
+o exemplo didático, o guia complementar e a documentação de revisão das fontes.
+Essa autoria também aparece na capa, na folha de rosto, nos metadados e na
+página de créditos e agradecimentos do PDF.
+
+Agradecemos a **Matheus Breguêz** pela reformulação e pela disponibilização do
+guia à comunidade da CA-SI. Agradecemos também a **Jean-Philippe Eisenbarth**
+e aos colaboradores do SRS-Tex pela base aberta que tornou esta versão possível.
 
 O modelo original é de **Jean-Philippe Eisenbarth**, distribuído sob
 **GPL-3.0-or-later**, preservada nesta adaptação. Consulte [LICENSE](LICENSE).

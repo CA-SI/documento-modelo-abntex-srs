@@ -224,7 +224,7 @@ componentes, implantação e pacotes. DER e rastreabilidade são modelos de apoi
 As fontes vetoriais ficam em `diagramas/`, sem imagens dos documentos recebidos.
 Os novos modelos não ampliam o domínio nem mudam o contrato de API.
 
-A versão final tem 54 páginas. `make check` e a compilação limpa em cópia
+A versão validada na revisão 003 tinha 54 páginas. `make check` e a compilação limpa em cópia
 isolada foram aprovados; o texto extraído das duas compilações é idêntico.
 As 54 páginas foram inspecionadas por renderização, com ampliação dos diagramas.
 Não há referências indefinidas, caixas excedidas ou destinos PDF duplicados no
@@ -255,3 +255,9 @@ elegível é condição de início do objeto. Artefatos de implantação são de
 como elementos internos aos nós. A conferência também considerou os registros
 primários da OMG sobre [transição inicial](https://issues.omg.org/issues/UMLR-803)
 e a [notação de artefatos implantados](https://www.omg.org/spec/UML/ISO/19505-2/PDF).
+
+A [revisão de autoria](specs/005-autoria-e-creditos/spec.md) acrescenta a
+página de créditos e agradecimentos e identifica Matheus Breguêz na capa,
+na folha de rosto e nos metadados. O PDF passa a ter 55 páginas; os arquivos
+do conteúdo técnico, os diagramas, o glossário e as transições permanecem
+inalterados em relação à revisão anterior.
